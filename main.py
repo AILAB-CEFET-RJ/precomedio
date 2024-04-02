@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import re
 import statistics
+import numpy as np
 
 def fazer_pesquisa(pesquisa):
     headers = {
@@ -73,6 +74,23 @@ def obter_modelos_e_precos(soup_results, soup_ads):
 
     return storage_sizes
 
+def detectar_outliers(precos):
+    media = statistics.mean(precos)
+    desvio_padrao = statistics.stdev(precos)
+    
+    limite = 2
+    
+    limite_superior = media + limite * desvio_padrao
+    limite_inferior = media - limite * desvio_padrao
+    
+    outliers = [preco for preco in precos if preco > limite_superior or preco < limite_inferior]
+    
+    precos_sem_outliers = [preco for preco in precos if preco not in outliers]
+    
+    media_sem_outliers = statistics.mean(precos_sem_outliers)
+    
+    return media_sem_outliers
+
 def escrever_resultados(storage_sizes):
     for storage_size, data in storage_sizes.items():
         with open(f"{storage_size}_modelos.txt", "w") as file:
@@ -82,12 +100,12 @@ def escrever_resultados(storage_sizes):
                 file.write("\n")
 
         if data["precos"]:
-            preco_medio = statistics.mean(data["precos"])
+            preco_medio = detectar_outliers(data["precos"])
         else:
             preco_medio = 0
 
         with open(f"{storage_size}_preco_medio.txt", "w") as file:
-            file.write(f"Preço médio para {storage_size}: {preco_medio:.2f}")
+            file.write(f"Preço médio para {storage_size}: {preco_medio:.2f}\n")
 
 def main():
     pesquisa = input("Faça sua pesquisa aqui: \n")
