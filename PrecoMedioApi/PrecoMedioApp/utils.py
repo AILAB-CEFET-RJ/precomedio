@@ -40,11 +40,11 @@ def obter_modelos_e_precos(soup_results, soup_ads, model):
                 price_element = result.find("span", {"class": "a8Pemb OFFNJ"})
                 supplier_span = result.find("div", {"class": "aULzUe IuHnof"})
                 supplier = supplier_span.get_text(strip=True) if supplier_span else None
-                if price_element:
+                if price_element and not result.find("span", {"class": "tD1ls"}):  
                     price_text = price_element.get_text()
                     price = obter_preco(price_text)
                     if price is not None:
-                        create_PriceTracker(title,price,product,model,supplier)
+                        create_PriceTracker(title, price, product, model, supplier)
 
     for ad in soup_ads:
         title = ad.find(re.compile('^h\d$')).get_text()
@@ -52,15 +52,16 @@ def obter_modelos_e_precos(soup_results, soup_ads, model):
             storage_match = re.search(r'\d+GB', title)
             if storage_match:
                 storage_size = storage_match.group()
-                product =  create_Product(title, storage_size, "Apple")
+                product = create_Product(title, storage_size, "Apple")
                 price_element = ad.find("span", {"class": "T14wmb"})
                 supplier_div = ad.find("div", {"class": "sh-np__seller-container"})
                 supplier = supplier_div.get_text(strip=True) if supplier_div else None
-                if price_element:
+                if price_element and not ad.find("span", {"class": "tD1ls"}):
                     price_text = price_element.get_text()
                     price = obter_preco(price_text)
                     if price is not None:
-                        create_PriceTracker(title, price,product,model,supplier)
+                        create_PriceTracker(title, price, product, model, supplier)
+
 
 def search_product(soup_results, soup_ads):
     product_list = obter_modelos_e_precos(soup_results,soup_ads)

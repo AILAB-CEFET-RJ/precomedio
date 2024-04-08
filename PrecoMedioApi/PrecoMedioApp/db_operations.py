@@ -1,3 +1,4 @@
+import re
 from .models import Products, PriceTracker
 from datetime import datetime
 
@@ -50,5 +51,18 @@ def create_PriceTracker(title, price, product,model, supplier):
         Supplier = supplier
     )
 
-def get_price_trackers_by_title_contains(title_contains):
-    return PriceTracker.objects.filter(Model__icontains=title_contains)
+def get_price_trackers_by_title_and_storage(title, storage):
+    if storage:
+        storage_number = None
+        storage_numbers = re.findall(r'\d+', storage)
+        if storage_numbers:
+            storage_number = int(storage_numbers[0])
+        
+        title = re.sub(r'(\d+)', r' \1', title).strip()
+
+        if storage_number is not None:
+            return PriceTracker.objects.filter(Model__icontains=title, Product__StorageGB=storage_number)
+    else:
+        title = re.sub(r'(\d+)', r' \1', title).strip()
+        return PriceTracker.objects.filter(Model__icontains=title)
+

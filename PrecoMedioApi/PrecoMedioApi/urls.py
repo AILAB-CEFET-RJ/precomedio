@@ -20,5 +20,5 @@ from PrecoMedioApp.views import search
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('search/<str:model>/', search, name='search'), 
+    path('search/<str:model>/<str:storage>/', search, name='search'), 
 ]
