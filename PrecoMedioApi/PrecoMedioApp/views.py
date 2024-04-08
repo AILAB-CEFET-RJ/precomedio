@@ -1,11 +1,11 @@
-from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
-from rest_framework.parsers import JSONParser
 from django.http.response import JsonResponse
 
-from .models import PriceTracker, Products
-from .serializers import ProductsSerializer, PriceTrackerSerializer
-from .utils import get_all_price_trackers,fazer_pesquisa, extrair_resultados, obter_modelos_e_precos
+from .db_operations import get_all_price_trackers, get_price_trackers_by_title_contains
+from .utils import extrair_resultados, fazer_pesquisa, obter_modelos_e_precos
+
+from .serializers import PriceTrackerSerializer
+
 
 @csrf_exempt
 def search(request, model:str):  

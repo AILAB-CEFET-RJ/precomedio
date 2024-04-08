@@ -1,11 +1,9 @@
 import requests
-from bs4 import BeautifulSoup
 import re
-import statistics
-import numpy as np
-from datetime import datetime
-from .models import Products, PriceTracker
-from decimal import Decimal, InvalidOperation
+from bs4 import BeautifulSoup
+from .db_operations import create_PriceTracker, create_Product, save_product_and_price
+from .text_processing import obter_preco
+
 
 def fazer_pesquisa(pesquisa):
     headers = {
@@ -30,7 +28,6 @@ def extrair_resultados(soup):
 
 
 def obter_modelos_e_precos(soup_results, soup_ads, model):
-    products_list = {}
     palavras_proibidas = ["vitrine", "usado", "recondicionado", "Sou como novo"]
 
     for result in soup_results:
@@ -41,11 +38,13 @@ def obter_modelos_e_precos(soup_results, soup_ads, model):
                 storage_size = storage_match.group()
                 product = create_Product(title, storage_size, "Apple")
                 price_element = result.find("span", {"class": "a8Pemb OFFNJ"})
+                supplier_span = result.find("div", {"class": "aULzUe IuHnof"})
+                supplier = supplier_span.get_text(strip=True) if supplier_span else None
                 if price_element:
                     price_text = price_element.get_text()
                     price = obter_preco(price_text)
                     if price is not None:
-                        create_PriceTracker(title,price,product,model)
+                        create_PriceTracker(title,price,product,model,supplier)
 
     for ad in soup_ads:
         title = ad.find(re.compile('^h\d$')).get_text()
@@ -55,95 +54,15 @@ def obter_modelos_e_precos(soup_results, soup_ads, model):
                 storage_size = storage_match.group()
                 product =  create_Product(title, storage_size, "Apple")
                 price_element = ad.find("span", {"class": "T14wmb"})
+                supplier_div = ad.find("div", {"class": "sh-np__seller-container"})
+                supplier = supplier_div.get_text(strip=True) if supplier_div else None
                 if price_element:
                     price_text = price_element.get_text()
                     price = obter_preco(price_text)
                     if price is not None:
-                        create_PriceTracker(title, price,product,model)
-
-    return products_list
-
-def obter_preco(price_text):
-    numeric_price_str = re.sub(r'[^\d,]', '', price_text)
-    numeric_price_str = numeric_price_str.replace(',', '.')
-
-    try:
-        decimal_price = Decimal(numeric_price_str)
-    except InvalidOperation:
-        print("Erro de conversão para Decimal:", numeric_price_str)
-        decimal_price = None
-
-    return decimal_price
-
-def create_Product(title, storage, brand):
-    product, _ = Products.objects.get_or_create(
-        Model=title,
-        StorageGB=int(storage[:-2]),  
-        Brand=brand
-    )
-    return product
-
-def create_PriceTracker(title, price, product,model):
-    PriceTracker.objects.create(
-        Model=title,
-        DateOfSearch=datetime.now(),  
-        Price=price,
-        SearchString=model,  
-        Product=product
-    )
-
-    
-
-def detectar_outliers(precos):
-    media = statistics.mean(precos)
-    desvio_padrao = statistics.stdev(precos)
-    
-    limite = 2
-    
-    limite_superior = media + limite * desvio_padrao
-    limite_inferior = media - limite * desvio_padrao
-    
-    outliers = [preco for preco in precos if preco > limite_superior or preco < limite_inferior]
-    
-    precos_sem_outliers = [preco for preco in precos if preco not in outliers]
-    
-    media_sem_outliers = statistics.mean(precos_sem_outliers)
-    
-    return media_sem_outliers
-
-
-
-def save_product_and_price(products_list, searchString):
-    for storage_size, data in products_list.items():
-        for i in range(len(data["modelos"])):
-            modelo = data["modelos"][i]
-            preco = data["precos"][i]
-            vendedor = data["vendedores"][i]
-            
-            
-            product, created = Products.objects.get_or_create(
-                Model=modelo,
-                StorageGB=storage_size,
-                defaults={
-                    'Brand': '',  # Preencher com a marca, se disponível
-                }
-            )
-
-            # Criar e salvar o objeto PriceTracker
-            price_tracker = PriceTracker.objects.create(
-                Model=modelo,
-                DateOfSearch=datetime.now(),
-                Price=preco,
-                SearchString= searchString,  
-                Product=product,
-                Supplier=vendedor
-            )
-
+                        create_PriceTracker(title, price,product,model,supplier)
 
 def search_product(soup_results, soup_ads):
     product_list = obter_modelos_e_precos(soup_results,soup_ads)
     save_product_and_price(products_list=product_list)
     
-
-def get_all_price_trackers():
-    return PriceTracker.objects.all()
