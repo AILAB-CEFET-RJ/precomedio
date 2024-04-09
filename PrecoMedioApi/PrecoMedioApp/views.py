@@ -1,7 +1,7 @@
 from django.views.decorators.csrf import csrf_exempt
 from django.http.response import JsonResponse
 
-from .db_operations import get_all_price_trackers, get_price_trackers_by_title_and_storage
+from .db_operations import get_all_price_trackers, get_price_trackers_by_title_and_storage, get_product_with_lowest_price
 from .utils import extrair_resultados, fazer_pesquisa, obter_modelos_e_precos
 
 from .serializers import PriceTrackerSerializer
@@ -20,4 +20,3 @@ def search(request, model:str, storage: str):
         return JsonResponse(serialized_priceTrackers, safe=False, status=200)
     else:
         return JsonResponse({'message': 'Method not allowed'}, status=405)
-    

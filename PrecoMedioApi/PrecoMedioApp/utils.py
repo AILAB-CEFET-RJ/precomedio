@@ -1,8 +1,8 @@
 import requests
 import re
 from bs4 import BeautifulSoup
-from .db_operations import create_PriceTracker, create_Product, save_product_and_price
-from .text_processing import obter_preco
+from .db_operations import create_PriceTracker, create_Product, save_product_and_price, get_price_trackers_by_title
+from .text_processing import obter_preco, has_similar_product
 
 
 def fazer_pesquisa(pesquisa):
@@ -27,8 +27,9 @@ def extrair_resultados(soup):
     return soup_ads, soup_results
 
 
+
 def obter_modelos_e_precos(soup_results, soup_ads, model):
-    palavras_proibidas = ["vitrine", "usado", "recondicionado", "Sou como novo"]
+    palavras_proibidas = ["vitrine", "usado", "recondicionado", "Sou como novo", "Como Novo", "Zerado"]
 
     for result in soup_results:
         title = result.find(re.compile('^h\d$')).get_text()
@@ -44,7 +45,8 @@ def obter_modelos_e_precos(soup_results, soup_ads, model):
                     price_text = price_element.get_text()
                     price = obter_preco(price_text)
                     if price is not None:
-                        create_PriceTracker(title, price, product, model, supplier)
+                        if not has_similar_product(title, model):
+                            create_PriceTracker(title, price, product, model, supplier)
 
     for ad in soup_ads:
         title = ad.find(re.compile('^h\d$')).get_text()
@@ -60,8 +62,8 @@ def obter_modelos_e_precos(soup_results, soup_ads, model):
                     price_text = price_element.get_text()
                     price = obter_preco(price_text)
                     if price is not None:
-                        create_PriceTracker(title, price, product, model, supplier)
-
+                        if not has_similar_product(title, model):
+                            create_PriceTracker(title, price, product, model, supplier)
 
 def search_product(soup_results, soup_ads):
     product_list = obter_modelos_e_precos(soup_results,soup_ads)

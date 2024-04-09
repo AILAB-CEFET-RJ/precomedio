@@ -1,6 +1,7 @@
 import re
 from .models import Products, PriceTracker
 from datetime import datetime
+from django.db.models import Min
 
 
 def save_product_and_price(products_list, searchString):
@@ -51,6 +52,10 @@ def create_PriceTracker(title, price, product,model, supplier):
         Supplier = supplier
     )
 
+def get_price_trackers_by_title(title):
+    return PriceTracker.objects.filter(Model__icontains=title)
+
+
 def get_price_trackers_by_title_and_storage(title, storage):
     if storage:
         storage_number = None
@@ -65,4 +70,20 @@ def get_price_trackers_by_title_and_storage(title, storage):
     else:
         title = re.sub(r'(\d+)', r' \1', title).strip()
         return PriceTracker.objects.filter(Model__icontains=title)
+    
 
+def get_product_with_lowest_price(title_contains, storage):
+
+    if storage is not None:
+        products = PriceTracker.objects.filter(Model__icontains=title_contains, StorageGB=storage)
+    else:
+        products = PriceTracker.objects.filter(Model__icontains=title_contains)
+    
+    if not products.exists():
+        return None
+    
+    products_with_min_price = products.annotate(min_price=Min('pricetracker__Price'))
+    
+    product_with_lowest_price = products_with_min_price.order_by('min_price').first()
+    
+    return product_with_lowest_price
