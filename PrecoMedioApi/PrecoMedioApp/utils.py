@@ -1,8 +1,8 @@
 import requests
 import re
 from bs4 import BeautifulSoup
-from .db_operations import create_PriceTracker, create_Product, save_product_and_price, get_price_trackers_by_title
-from .text_processing import obter_preco, has_similar_product
+from .db_operations import create_priceTracker, get_or_create_product, save_product_and_price, get_price_trackers_by_title
+from .text_processing import obter_preco, similar
 
 
 def fazer_pesquisa(pesquisa):
@@ -37,7 +37,7 @@ def obter_modelos_e_precos(soup_results, soup_ads, model):
             storage_match = re.search(r'\d+GB', title)
             if storage_match:
                 storage_size = storage_match.group()
-                product = create_Product(title, storage_size, "Apple")
+                product = get_or_create_product(title, storage_size, "Apple")
                 price_element = result.find("span", {"class": "a8Pemb OFFNJ"})
                 supplier_span = result.find("div", {"class": "aULzUe IuHnof"})
                 supplier = supplier_span.get_text(strip=True) if supplier_span else None
@@ -46,7 +46,7 @@ def obter_modelos_e_precos(soup_results, soup_ads, model):
                     price = obter_preco(price_text)
                     if price is not None:
                         if not has_similar_product(title, model):
-                            create_PriceTracker(title, price, product, model, supplier)
+                            create_priceTracker(title, price, product, model, supplier)
 
     for ad in soup_ads:
         title = ad.find(re.compile('^h\d$')).get_text()
@@ -54,7 +54,7 @@ def obter_modelos_e_precos(soup_results, soup_ads, model):
             storage_match = re.search(r'\d+GB', title)
             if storage_match:
                 storage_size = storage_match.group()
-                product = create_Product(title, storage_size, "Apple")
+                product = get_or_create_product(title, storage_size, "Apple")
                 price_element = ad.find("span", {"class": "T14wmb"})
                 supplier_div = ad.find("div", {"class": "sh-np__seller-container"})
                 supplier = supplier_div.get_text(strip=True) if supplier_div else None
@@ -63,9 +63,16 @@ def obter_modelos_e_precos(soup_results, soup_ads, model):
                     price = obter_preco(price_text)
                     if price is not None:
                         if not has_similar_product(title, model):
-                            create_PriceTracker(title, price, product, model, supplier)
+                            create_priceTracker(title, price, product, model, supplier)
 
 def search_product(soup_results, soup_ads):
     product_list = obter_modelos_e_precos(soup_results,soup_ads)
     save_product_and_price(products_list=product_list)
     
+
+def has_similar_product(title, model):
+    similar_products = get_price_trackers_by_title(model)
+    for product in similar_products:
+        if similar(title, product.Model) > 1: 
+            return True
+    return False

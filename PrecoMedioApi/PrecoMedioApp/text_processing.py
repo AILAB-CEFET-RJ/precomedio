@@ -3,7 +3,6 @@ import numpy as np
 import re
 from difflib import SequenceMatcher
 from decimal import Decimal, InvalidOperation
-from .db_operations import get_price_trackers_by_title
 
 
 def obter_preco(price_text):
@@ -40,9 +39,18 @@ def similar(a, b):
     return SequenceMatcher(None, a, b).ratio()  
 
 
-def has_similar_product(title, model):
-    similar_products = get_price_trackers_by_title(model)
-    for product in similar_products:
-        if similar(title, product.Model) > 1: 
-            return True
-    return False
+def get_brand(model):
+    for marca in marcas_smartphone:
+        if marca.lower() in model.lower():
+            return marca
+    return None  
+
+marcas_smartphone = [
+    "Apple", "Samsung", "Huawei", "Xiaomi", "OnePlus", "Google", "Sony", "LG",
+    "Motorola", "Nokia", "HTC", "BlackBerry", "Lenovo", "ASUS", "Oppo", "Vivo",
+    "Realme", "ZTE", "Alcatel", "Meizu", "TCL", "Honor", "Infinix", "Micromax",
+    "Poco", "Redmi", "Sharp", "Panasonic", "Tecno", "Coolpad", "Gionee", "LeEco",
+    "Razer", "Wiko", "Yota", "ZUK", "Essential", "Fairphone", "Fujitsu", "HP",
+    "Kyocera", "Land Rover", "Microsoft", "Nubia", "Roku", "Saygus", "Vertu",
+    "YU", "Zopo", "iQOO"
+]
