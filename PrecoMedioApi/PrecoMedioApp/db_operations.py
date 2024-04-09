@@ -12,8 +12,8 @@ def save_product_and_price(products_list, searchString):
             preco = data["precos"][i]
             vendedor = data["vendedores"][i]
 
-            product = get_or_create_Product(modelo,storage_size,get_brand(modelo))
-            price_tracker = create_PriceTracker(modelo,preco,product,searchString,vendedor)
+            product = get_or_create_product(modelo,storage_size,get_brand(modelo))
+            price_tracker = create_priceTracker(modelo,preco,product,searchString,vendedor)
 
 
 def get_all_price_trackers():
