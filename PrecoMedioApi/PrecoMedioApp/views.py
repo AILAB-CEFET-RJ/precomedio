@@ -20,3 +20,5 @@ def search(request, model:str, storage: str):
         return JsonResponse(serialized_priceTrackers, safe=False, status=200)
     else:
         return JsonResponse({'message': 'Method not allowed'}, status=405)
+    
+    

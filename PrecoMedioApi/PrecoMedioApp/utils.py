@@ -29,7 +29,7 @@ def extrair_resultados(soup):
 
 
 def obter_modelos_e_precos(soup_results, soup_ads, model):
-    palavras_proibidas = ["vitrine", "usado", "recondicionado", "Sou como novo", "Como Novo", "Zerado"]
+    palavras_proibidas = ["vitrine", "usado", "recondicionado", "Sou como novo", "Como Novo", "Zerado", "Seminovo", "Semi novo"]
 
     for result in soup_results:
         title = result.find(re.compile('^h\d$')).get_text()
