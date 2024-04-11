@@ -12,11 +12,11 @@ def obter_preco(price_text):
     try:
         decimal_price = Decimal(numeric_price_str)
     except InvalidOperation:
-        print("Erro de conversão para Decimal:", numeric_price_str)
         decimal_price = None
 
     return decimal_price
 
+#Usar esse metodo no endpoint preco medio
 def detectar_outliers(precos):
     media = statistics.mean(precos)
     desvio_padrao = statistics.stdev(precos)
@@ -43,7 +43,7 @@ def get_brand(model):
     for marca in marcas_smartphone:
         if marca.lower() in model.lower():
             return marca
-    return None  
+    return 'Apple'  
 
 marcas_smartphone = [
     "Apple", "Samsung", "Huawei", "Xiaomi", "OnePlus", "Google", "Sony", "LG",

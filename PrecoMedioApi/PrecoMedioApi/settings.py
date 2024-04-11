@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'PrecoMedioApp',
-    'corsheaders'
+    'corsheaders',
+    'rest_framework.authtoken'
 ]
 CORS_ORIGIN_ALLOW_ALL = True
 

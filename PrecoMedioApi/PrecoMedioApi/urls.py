@@ -15,10 +15,12 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
-from PrecoMedioApp.views import search
+from django.urls import path, re_path
+from PrecoMedioApp.views import search, login, signup
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('search/<str:model>/<str:storage>/', search, name='search'), 
+    path('search/<str:model>/<str:storage>/', search, name='search'),
+    re_path('login', login),
+    re_path('signup', signup)
 ]
