@@ -72,7 +72,7 @@ def boxPlot(dadosRecolhido):
     try:
         if not os.path.isfile('./precoMedioProduto/static/img/boxplot.png'):            
             dadosRecolhidoLista = []
-            if dadosRecolhido:
+            if dadosRecolhido != []:
                 for valor in dadosRecolhido:
                     dadosRecolhidoLista.append(valor["valproduto"])            
                 plt.boxplot(dadosRecolhidoLista)
@@ -99,6 +99,14 @@ def home(request,produtoEscolhido = "",parametros_estatisticos=[]):
         return render(request,"home.html",{'produtoEscolhido':res,'parametros_estatisticos':parametros_estatisticos})     
     except:
         return "Erro ao processo os dados"
+def login(request):
+    return render(request,"login.html")
+def redefinirSenha(request):
+    return render(request,"redefinirSenha.html")
+def cadastrarUsuario(request):
+    return render(request,"cadastrarUsuario.html")
+def historicoProduto(request):
+    return render(request,"historicoProduto.html")
 @csrf_exempt
 def produto(request,id = ""):             
     if request.method == 'GET':

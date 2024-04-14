@@ -84,11 +84,5 @@ article > #table-home{
     color: black;
     font-weight: 400;
 }
-.adicionar-historico{
-    min-width: 100vw;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    border: 10px solid red;
-}
+
 
