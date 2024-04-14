@@ -1,0 +1,94 @@
+*{
+    padding: 0;
+    margin:0;
+    box-sizing: border-box;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+}
+#container2{
+    display: grid;
+    grid-template: 
+    "h h h"
+    "s s s";
+    gap:6px;
+}
+.title{
+    font-weight: 600;
+    background-color: white;
+    padding: 7px;
+    border-radius: 2px;
+    
+    
+}
+article form{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+header{
+    grid-area: "h";
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    min-width: 100vw;
+    min-height: 15vh;
+    background-color: beige;
+    
+}
+section{
+    grid-area: "s";
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-width: 100vw;
+    min-height: 85vh;
+    margin:9px;
+
+}
+article > #table-home{
+    border: 5px solid red;
+}
+#table-home{
+    min-width: 90%;
+    margin-top: 9px;
+}
+
+#itens-navegacao button{
+    font-size: 12px;
+    font-weight: 200;
+    border: 5px solid beige;
+    color: blue;
+    margin-right: 0px;
+    background-color: beige;
+}
+#img-lixeira{
+    width: 100%;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+   
+}
+#img-lixeira img{
+    width: 35px;
+    height: 35px;
+    outline: 0.2px solid black;
+    background-size: 100% 100%;
+    border-radius: 4px;
+    background-color: white;
+
+}
+#texto-sobre{
+    text-align:justify;
+    color: black;
+    font-weight: 400;
+}
+.adicionar-historico{
+    min-width: 100vw;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    border: 10px solid red;
+}
+
