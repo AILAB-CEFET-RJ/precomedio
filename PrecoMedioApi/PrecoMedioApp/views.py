@@ -6,11 +6,12 @@ from rest_framework import status
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
-from .db_operations import get_all_price_trackers, get_price_trackers_by_title_and_storage, get_product_with_lowest_price
+from .db_operations import get_all_price_trackers, get_price_trackers_by_title_and_storage, get_product_with_lowest_price, get_price_trackers_by_title
 from .utils import extrair_resultados, fazer_pesquisa, obter_modelos_e_precos
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from rest_framework.decorators import authentication_classes, permission_classes
 from rest_framework.permissions import IsAuthenticated
+from .text_processing import detectar_outliers
 
 from .serializers import PriceTrackerSerializer, UserSerializer
 
@@ -59,5 +60,16 @@ def signup(request):
 @permission_classes([IsAuthenticated])
 def test_token(request):
     return Response({})
-    
-    
+
+@api_view(['GET'])
+@authentication_classes([SessionAuthentication,TokenAuthentication])
+@permission_classes([IsAuthenticated])   
+def averagePrice(request, model:str):
+    if request.method == 'GET':
+        products = get_price_trackers_by_title(model)
+        average = detectar_outliers(products)
+        message = f"O preço médio do produto {model} é R$ {average:.2f}"
+        
+        return Response({"message": message})
+    else:
+        return JsonResponse({'message': 'Method not allowed'}, status=405)

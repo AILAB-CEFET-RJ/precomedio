@@ -16,11 +16,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, re_path
-from PrecoMedioApp.views import search, login, signup
+from PrecoMedioApp.views import search, login, signup, averagePrice
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('search/<str:model>/<str:storage>/', search, name='search'),
     re_path('login', login),
-    re_path('signup', signup)
+    re_path('signup', signup),
+    path('preco/<str:model>', averagePrice, name='averagePrice')
 ]

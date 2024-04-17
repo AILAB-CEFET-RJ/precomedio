@@ -2,7 +2,7 @@ import requests
 import re
 from bs4 import BeautifulSoup
 from .db_operations import create_priceTracker, get_or_create_product, save_product_and_price, get_price_trackers_by_title
-from .text_processing import obter_preco, similar, get_brand
+from .text_processing import obter_preco, similar, get_brand, detectar_outliers
 
 
 def fazer_pesquisa(pesquisa):
@@ -65,10 +65,6 @@ def obter_modelos_e_precos(soup_results, soup_ads, model):
                         if not has_similar_product(title, model):
                             create_priceTracker(title, price, product, model, supplier)
 
-def search_product(soup_results, soup_ads):
-    product_list = obter_modelos_e_precos(soup_results,soup_ads)
-    save_product_and_price(products_list=product_list)
-    
 
 def has_similar_product(title, model):
     similar_products = get_price_trackers_by_title(model)
