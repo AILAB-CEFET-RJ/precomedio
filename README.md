@@ -16,7 +16,7 @@ Preço Médio é uma aplicação Python voltada para calcular o preço médio de
 1. Clone o repositório e mude para a branch V2:
 
    ```
-   git clone <url_do_repositorio>
+   git clone git@github.com:MLRG-CEFET-RJ/precomedio.git
    cd precoMedio
    git checkout V2
    ```
