@@ -58,18 +58,17 @@ def get_price_trackers_by_title_and_storage(title, storage):
         return PriceTracker.objects.filter(Model__icontains=title)
     
 
-def get_product_with_lowest_price(title_contains, storage):
-
-    if storage is not None:
-        products = PriceTracker.objects.filter(Model__icontains=title_contains, StorageGB=storage)
+def get_product_with_lowest_price(model, storage=None):
+    if storage:
+        search_string = f"{model} {storage}"
+        products = PriceTracker.objects.filter(SearchString__icontains=search_string)
     else:
-        products = PriceTracker.objects.filter(Model__icontains=title_contains)
-    
+        products = PriceTracker.objects.filter(SearchString__icontains=model)
+
     if not products.exists():
         return None
-    
-    products_with_min_price = products.annotate(min_price=Min('pricetracker__Price'))
-    
+
+    products_with_min_price = products.annotate(min_price=Min('Price'))
     product_with_lowest_price = products_with_min_price.order_by('min_price').first()
     
     return product_with_lowest_price
