@@ -2,7 +2,7 @@
 
 ## Visão Geral
 
-Preço Médio é uma aplicação Python voltada para calcular o preço médio de produtos.
+Preço Médio é uma aplicação Python voltada para calcular o preço médio de produtos por meio de webscrapping da url do google shopping 
 
 ## Requisitos do Sistema
 
