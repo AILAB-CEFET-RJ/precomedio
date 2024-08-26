@@ -1,72 +1,70 @@
-# Preço Médio
+# Getting Started with Create React App
 
-## Visão Geral
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-Preço Médio é uma aplicação Python voltada para calcular o preço médio de produtos por meio de webscrapping da url do google shopping 
+## Available Scripts
 
-## Requisitos do Sistema
+In the project directory, you can run:
 
-- Python 3.12
-- Docker
-- Postman ou Insomnia
-- SQLite
+### `npm start`
 
-## Configuração do Ambiente
+Runs the app in the development mode.\
+Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
-1. Clone o repositório e mude para a branch V2:
+The page will reload when you make changes.\
+You may also see any lint errors in the console.
 
-   ```
-   git clone git@github.com:MLRG-CEFET-RJ/precomedio.git
-   cd precoMedio
-   git checkout main
-   ```
+### `npm test`
 
-2. Instale as dependências:
+Launches the test runner in the interactive watch mode.\
+See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-   ```
-   cd precoMedioApi
-   pip install -r requirements.txt
-   ```
+### `npm run build`
 
-3. Configure o banco de dados SQLite:
+Builds the app for production to the `build` folder.\
+It correctly bundles React in production mode and optimizes the build for the best performance.
 
-   ```
-   python manage.py migrate
-   python3 manage.py makemigrations PrecoMedioApp
-   ```
+The build is minified and the filenames include the hashes.\
+Your app is ready to be deployed!
 
-4. Crie o contêiner Docker:
+See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-   ```
-   docker-compose build
-   ```
+### `npm run eject`
 
-## Uso da Aplicação
+**Note: this is a one-way operation. Once you `eject`, you can't go back!**
 
-1. Inicie o servidor Django:
+If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
 
-   ```
-   python manage.py runserver
-   ```
+Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
 
-2. Faça requisições para a API usando o Postman ou o Insomnia.
+You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
 
-## Estrutura do Projeto
+## Learn More
 
-- **precoMedioApi**: Contém o código-fonte da API.
-- **PrecoMedioApp**: Aplicação principal.
-- **docker-compose.yml**: Configuração do contêiner Docker.
+You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
-## Contribuição
+To learn React, check out the [React documentation](https://reactjs.org/).
 
-- Faça um fork do repositório.
-- Crie uma nova branch com a sua feature.
-- Faça commit das suas mudanças e envie um pull request.
+### Code Splitting
 
-## Suporte
+This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
 
-Abra uma issue no GitHub para reportar problemas ou tirar dúvidas.
+### Analyzing the Bundle Size
 
-## Licença
+This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
 
-MIT License
+### Making a Progressive Web App
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+
+### Advanced Configuration
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+
+### Deployment
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+
+### `npm run build` fails to minify
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)

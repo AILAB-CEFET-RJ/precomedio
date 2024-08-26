@@ -1,0 +1,255 @@
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+#container2 {
+  display: grid;
+  grid-template:
+    "h h h"
+    "s s s"
+    "f f f";
+  gap: 6px;
+}
+
+.title {
+  font-weight: 600;
+  background-color: white;
+  padding: 7px;
+  border-radius: 2px;
+}
+
+article form {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+header {
+  grid-area: "h";
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  min-width: 100vw;
+  min-height: 15vh;
+  background-color: beige;
+
+}
+
+section {
+  grid-area: "s";
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-width: 100vw;
+  min-height: 70.5vh;
+  margin: 9px;
+
+}
+
+article>#table-home {
+  border: 5px solid red;
+}
+
+#table-home {
+  min-width: 90%;
+  margin-top: 9px;
+}
+
+#itens-navegacao button {
+  font-size: 12px;
+  font-weight: 200;
+  border: 5px solid beige;
+  color: blue;
+  margin-right: 0px;
+  background-color: beige;
+}
+
+#img-lixeira {
+  width: 100%;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+}
+
+#img-lixeira img {
+  width: 35px;
+  height: 35px;
+  outline: 0.2px solid black;
+  background-size: 100% 100%;
+  border-radius: 4px;
+  background-color: white;
+
+}
+
+#texto-sobre {
+  text-align: justify;
+  color: black;
+  font-weight: 400;
+}
+
+#container_login {
+  display: flex;
+  min-height: 100vh;
+  min-width: 100vw;
+  background-image: url("../public/images/preco_medio2.jpg");
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  justify-content: center;
+  align-items: center;
+  opacity: 0.89;
+}
+
+#secao_login form,
+#secao_login1 form {
+  display: flex;
+  width: 380px;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  color: white;
+  gap: 7px;
+  background-color: rgba(0, 0, 0, 0);
+
+}
+
+#secao_login input,
+#secao_login1 input {
+  width: 280px;
+  padding: 5px;
+  border: 0px;
+  outline: 0px;
+  color: white;
+  border-bottom: 2px solid white;
+  background-color: transparent;
+
+}
+
+#alterar_login h5,
+#alterar_login h6,
+#secao_login h3 {
+  color: white;
+}
+
+#alterar_login {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 5px;
+  font-size: small;
+}
+
+#secao_login input:hover,
+#secao_login input:focus {
+  background-color: transparent;
+  border: 0px;
+  border-bottom: 2px solid white;
+  color: white;
+  outline: 0px;
+
+}
+
+#voltar_login,
+#enviar_login {
+  color: white;
+  text-decoration: none;
+  border: 1px solid red;
+  padding: 3px;
+  background-color: red;
+  font-size: 15px;
+  border-radius: 2px;
+  padding: 6px;
+}
+
+#enviar_login2,
+#enviar_login {
+  border: 1px solid green;
+  background-color: green;
+  padding: 6px;
+
+}
+
+#enviar_dados_login {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+
+}
+
+#alterar_login a {
+  text-decoration: none;
+}
+
+#secao_login,
+#secao_login1 {
+  display: flex;
+  min-width: 20vw;
+  min-height: 20vh;
+  border: 8px solid black;
+  background-color: rgba(1, 44, 77, 0.9);
+  justify-content: space-evenly;
+  align-items: center;
+  flex-direction: column;
+  gap: 3px;
+  border-radius: 8px;
+  opacity: 0.9;
+}
+
+#secao_login1 {
+  min-width: 5vw;
+  min-height: 60vh;
+}
+
+#rodape_principal {
+  grid-area: "f";
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+  min-width: 100vw;
+  min-height: 5vh;
+  color: blue;
+  background-color: beige;
+}
+
+#icone_usuario {
+  height: 270px;
+  width: 380px;
+  opacity: 0.71;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+.imageIconeLoad{
+  position: fixed;
+  width:250px;
+  height:250px;
+  top:50%;
+  left:50%;
+  transform: translate(-50%,-50%);
+}
+#pgSite{
+  position: fixed;
+  top:50%;
+  left:50%;
+  transform: translate(-50%,-50%);
+  color:red;
+  font-size: 18px;
+  background-color: bisque;
+  padding: 8px;
+  border-radius: 4px;
+}
+#containerPg{
+  min-width: 100vw;
+  min-height: 100vh;
+  background-image: url("../public/images/preco_medio2.jpg");
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+}
