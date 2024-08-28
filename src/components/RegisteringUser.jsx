@@ -43,12 +43,14 @@ const RegisteringUser = () => {
                         <input type="text" {...register("email")} name="email" id="email" placeholder="email" />
                     </label>
                     <div style={{ color: "orange" }}>{errors.email?.message}</div>
-                    {!load &&
 
-                        <label className="my-3" id="enviar_dados_login" >
-                            <button className="text-light" id="enviar_login2" onClick={handleSubmit(onSubmit)} >Enviar</button>
-                            <Link to="/" id="voltar_login">Voltar</Link>
-                        </label>}
+
+                    <label className="my-3" id="enviar_dados_login" >
+                        {!load &&
+                            <button className="text-light" id="enviar_login2" onClick={handleSubmit(onSubmit)} >Enviar</button>}
+                        {!load &&
+                            <Link to="/" id="voltar_login">Voltar</Link>}
+                    </label>
 
                 </form>
             </section>
