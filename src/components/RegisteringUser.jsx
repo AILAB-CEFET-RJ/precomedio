@@ -6,13 +6,15 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import SchemaRegisteringUser from "../schemas/SchemaRegisteringUser";
 
 const RegisteringUser = () => {
-    const nav = useNavigate()
+    const nav = useNavigate();
+    const [load, setLoad] = useState(false);
     const { register, handleSubmit, formState: { errors } } = useForm({
         resolver: yupResolver(SchemaRegisteringUser)
     });
-    const [errorForm,setErroForm] = useState("");
+    const [errorForm, setErroForm] = useState("");
     const [messageErrorForm] = useState("Usuário já existe");
-    const onSubmit = async(data) => {
+    const onSubmit = async (data) => {
+        setLoad(true);
         let { token } = await PostUsers(data.user, data.password, data.email);
         if (token !== undefined) {
             alert("Cadastrado com sucesso!!!");
@@ -20,6 +22,7 @@ const RegisteringUser = () => {
         } else {
             setErroForm(true);
         }
+        setLoad(false);
     }
     return (
         <div id="container_login">
@@ -40,10 +43,12 @@ const RegisteringUser = () => {
                         <input type="text" {...register("email")} name="email" id="email" placeholder="email" />
                     </label>
                     <div style={{ color: "orange" }}>{errors.email?.message}</div>
-                    <label className="my-3" id="enviar_dados_login" >
-                        <button className="text-light" id="enviar_login2" onClick={handleSubmit(onSubmit)} >Enviar</button>
-                        <Link to="/" id="voltar_login">Voltar</Link>
-                    </label>
+                    {!load &&
+
+                        <label className="my-3" id="enviar_dados_login" >
+                            <button className="text-light" id="enviar_login2" onClick={handleSubmit(onSubmit)} >Enviar</button>
+                            <Link to="/" id="voltar_login">Voltar</Link>
+                        </label>}
 
                 </form>
             </section>

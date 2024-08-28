@@ -234,6 +234,7 @@ article>#table-home {
   top:50%;
   left:50%;
   transform: translate(-50%,-50%);
+  mix-blend-mode: multiply;
 }
 #pgSite{
   position: fixed;
@@ -252,4 +253,5 @@ article>#table-home {
   background-image: url("../public/images/preco_medio2.jpg");
   background-size: 100% 100%;
   background-repeat: no-repeat;
+  
 }
