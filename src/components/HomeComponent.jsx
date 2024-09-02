@@ -84,27 +84,24 @@ const HomeComponent = () => {
                 <table className="table table-striped ">
                   <thead className="thead-dark">
                     <tr >
-                      <th scope="col" className="text-success">Média</th>
+                      <th scope="col" className="text-success text-center">Média</th>
                       {/*<th scope="col" className="text-success">Mediana</th>
                   <th scope="col" className="text-success">Desvio Padrão</th>
                   <th scope="col" className="text-success">Variância</th>*/}
-                      <th scope="col" className="text-success">Menor valor</th>
+                      <th scope="col" className="text-success text-center">Menor valor</th>
                       {/*<th scope="col" className="text-success">Maior valor</th>*/}
                     </tr>
                   </thead>
                   <tbody>
-                    {statistical_mean && statistical_lower ?
                       <tr>
-                        <td>{statistical_mean.replace(".", ",")}</td>
+                        <td className="text-center">{statistical_mean ? statistical_mean.replace(".", ","):<span style={{color:"red"}}>-</span>}</td>
                         {/*
                     <td>-</td>
                     <td>-</td>
                     <td>-</td> */}
-                        <td>{statistical_lower.replace(".", ",")}</td>
+                        <td className="text-center">{statistical_lower ? statistical_lower.replace(".", ","):<span style={{color:"red"}}>-</span>}</td>
                         {/*<td>-</td>*/}
                       </tr>
-                      : <h5 className="h6 text-danger">Nenhum dado carregado</h5>
-                    }
                   </tbody>
                 </table>
               </div>
@@ -114,15 +111,15 @@ const HomeComponent = () => {
                 <table className="table table-striped">
                   <thead className="thead-dark">
                     <tr>
-                      <th class="align-middle text-primary" scope="col">Modelo</th>
-                      <th class="align-middle text-primary" scope="col">Preço</th>
-                      <th class="align-middle text-primary" scope="col">Fornecedor</th>
-                      <th class="align-middle text-primary" scope="col">Armazenamento</th>
-                      <th class="align-middle text-primary" scope="col">Data</th>
+                      <th className="align-middle text-primary" scope="col">Modelo</th>
+                      <th className="align-middle text-primary" scope="col">Preço</th>
+                      <th className="align-middle text-primary" scope="col">Fornecedor</th>
+                      <th className="align-middle text-primary" scope="col">Armazenamento</th>
+                      <th className="align-middle text-primary" scope="col">Data</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {productChosen.length > 0 ? productChosen.map((prod, i) => (
+                    {productChosen.length > 0 && productChosen ? productChosen.map((prod, i) => (
                       <tr key={i}>
                         <th hidden="hidden" className="align-middle idProduto">{prod.ProductId}</th>
                         <td>{prod.Model}</td>
@@ -140,15 +137,14 @@ const HomeComponent = () => {
                 }
               </div>
             </article>
-            {numpages.length >= 1 &&
+            {numpages.length > 1 &&
               <nav aria-label="Navegação de página exemplo">
                 <ul className="pagination justify-content-center">
                   {numpages.map((nps) => (
                     <li className="page-item" key={nps}><button name={nps}
                       className="page-link" href="#"
                       onClick={() => { onPagination(nps, true) }}
-                    >{nps === 0 ? "primeiro" : nps === numpages.length - 1 ? "ultimo" : nps + 1
-                      }</button></li>
+                    >{nps +1}</button></li>
                   ))}
                 </ul>
               </nav>}

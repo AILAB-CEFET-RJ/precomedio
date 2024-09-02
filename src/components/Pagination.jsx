@@ -1,6 +1,6 @@
 export const Pagination = (data, num, numPage) => {
   let sizeArray = data.length;
-  const countArray = 100;
+  const countArray = 50;
   let listNum = [];
   if (numPage) {
     num = parseInt(numPage);

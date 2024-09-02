@@ -23,20 +23,20 @@ const HistoryProduct = () => {
     <div id="container-fluid container2">
       <Header mainTitle="Favorito" title="Home" path="/home" />
       <article id="table-home">
-        <div class="table-responsive">
-          <table class="table table-striped ">
-            <thead class="thead-dark">
+        <div className="table-responsive">
+          <table className="table table-striped ">
+            <thead className="thead-dark">
               <tr>
-                <th class="align-middle text-success" scope="col">Modelo</th>
-                <th class="align-middle text-success" scope="col">Preço</th>
-                <th class="align-middle text-success" scope="col">Fornecedor</th>
-                <th class="align-middle text-success" scope="col">Marca</th>
-                <th class="align-middle text-success" scope="col">Armazenamento GB</th>
-                <th class="align-middle text-success" scope="col">Data</th>
+                <th className="align-middle text-success" scope="col">Modelo</th>
+                <th className="align-middle text-success" scope="col">Preço</th>
+                <th className="align-middle text-success" scope="col">Fornecedor</th>
+                <th className="align-middle text-success" scope="col">Marca</th>
+                <th className="align-middle text-success" scope="col">Armazenamento GB</th>
+                <th className="align-middle text-success" scope="col">Data</th>
               </tr>
             </thead>
             <tbody>
-              {historicoEscolhido.length > 0 ? historicoEscolhido.map((prod, ids) => (
+              {historicoEscolhido.length > 0  && historicoEscolhido  ? historicoEscolhido.map((prod, ids) => (
                 <tr key={ids}>
                   <th hidden="hidden" className="align-middle idProduto">{prod.ProductId}</th>
                   <td>{prod.Model}</td>

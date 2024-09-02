@@ -7,7 +7,6 @@ export const PostUsersLogin = async (username, password) => {
             username,
             password
         }
-        console.log(login1)
         token = await fetch(url1, {
             method: "POST",
             headers: {
@@ -20,7 +19,6 @@ export const PostUsersLogin = async (username, password) => {
             .catch(error => error)
         return token
     }
-
     token = await funcPostUsersLogin();
     return token
 }

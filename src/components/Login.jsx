@@ -28,8 +28,9 @@ const Login = () => {
                 nav("/");
             }
         } catch (e) {
-            setErroForm("Erro: " + e);
-        }
+            alert("Erro no servidor");
+            console.log("Erro no servidor");
+          }
         setLoad(false);
     }
     return (

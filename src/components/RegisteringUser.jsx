@@ -15,12 +15,18 @@ const RegisteringUser = () => {
     const [messageErrorForm] = useState("Usuário já existe");
     const onSubmit = async (data) => {
         setLoad(true);
-        let { token } = await PostUsers(data.user, data.password, data.email);
-        if (token !== undefined) {
-            alert("Cadastrado com sucesso!!!");
-            nav("/");
-        } else {
-            setErroForm(true);
+        try {
+
+            let { token } = await PostUsers(data.user, data.password, data.email);
+            if (token !== undefined) {
+                alert("Cadastrado com sucesso!!!");
+                nav("/");
+            } else {
+                setErroForm(true);
+            }
+        } catch (e) {
+            alert("Erro no servidor");
+            console.log("Erro no servidor");
         }
         setLoad(false);
     }
