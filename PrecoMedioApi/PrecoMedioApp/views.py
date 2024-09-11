@@ -64,9 +64,9 @@ def test_token(request):
 @api_view(['GET'])
 @authentication_classes([SessionAuthentication,TokenAuthentication])
 @permission_classes([IsAuthenticated])   
-def averagePrice(request, model:str):
+def averagePrice(request, model:str, storage: str = None):
     if request.method == 'GET':
-        products = get_price_trackers_by_title(model)
+        products = get_price_trackers_by_title(model, storage)
         average = detectar_outliers(products)
         message = f"O preço médio do produto {model} é R$ {average:.2f}"
         

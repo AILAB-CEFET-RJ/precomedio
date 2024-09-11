@@ -38,8 +38,13 @@ def create_priceTracker(title, price, product,model, supplier):
         Supplier = supplier
     )
 
-def get_price_trackers_by_title(title):
-    return PriceTracker.objects.filter(Model__icontains=title)
+def get_price_trackers_by_title(model, storage=None):
+  if storage:
+    search_string = f"{model} {storage}"
+    products = PriceTracker.objects.filter(SearchString__icontains=search_string)
+  else:
+    products = PriceTracker.objects.filter(SearchString__icontains=model)
+  return products
 
 
 def get_price_trackers_by_title_and_storage(title, storage):
