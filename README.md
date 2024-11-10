@@ -14,7 +14,7 @@ O **Preço Médio** é uma aplicação Python criada para calcular o preço méd
 ## 1. Python 
 
 1. Baixar o instalador do Python:
-   - Acesse o site oficial do Python (https://www.python.org/downloads/) e baixe a versão mais recente.
+   - Acesse o site oficial do Python (https://www.python.org/downloads/) e baixe a versão 3.12.
 
 2. Instalar o Python:
    - Execute o instalador baixado.
