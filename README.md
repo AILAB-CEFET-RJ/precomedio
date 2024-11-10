@@ -31,6 +31,9 @@ O **Preço Médio** é uma aplicação Python criada para calcular o preço méd
    - Digite `pip install flake8` para indicar formatos de código fora da convenção Python PEP8
    - Digite `pip install black` para corrigir formatos de código fora da convenção Python PEP8
    - Digite `pip install isort` para corrigir formatos de importação de pacotes fora da convenção Python PEP8
+  
+   Você também pode instalar plugins para VSCode:
+   - Instale o `Black Formatter` e o `Isort`, assim o VsCode irá ordenar os imports e corrigir automaticamente formatação do código.
 
 ## 2. Ambiente Virtual
 ### 2.1. Acessar o diretório desejado:
