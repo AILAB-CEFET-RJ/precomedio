@@ -27,14 +27,16 @@ O **Preço Médio** é uma aplicação Python criada para calcular o preço méd
    - Digite `python --version` e pressione Enter. Você deve ver a versão do Python instalada, algo como `Python 3.x.x`.
 
 ## 2. Ambiente Virtual
-### 2.1. Criar um Ambiente Virtual 
-1. Acessar o diretório desejado:
+### 2.1. Acessar o diretório desejado:
    - No Prompt de Comando, navegue até o diretório onde você quer criar o ambiente virtual. Por exemplo:
      
 cmd
      cd C:\Users\SeuUsuario
 
 ### 2.2. Criar o ambiente virtual:
+**Observação:** Considere usar o Pipenv ou Poetry para organizar seus pacotes, pois são ferramentas mais poderosas para desinstalar dependências aninhadas.
+A solução abaixo é apenas a mais simples.
+
    - No Prompt de Comando, crie um ambiente virtual com o comando:
      
 cmd
@@ -76,7 +78,7 @@ Para sair do ambiente virtual e voltar ao prompt normal, basta digitar:
 cmd
 deactivate
 
-> **Observação:** O comando deactivate **apenas sai** do ambiente virtual; ele **não o apaga**. O ambiente virtual e todos os pacotes instalados nele permanecem salvos. Você pode reativá-lo a qualquer momento com o comando nome_do_ambiente\Scripts\activate. Para excluir o ambiente virtual completamente, você precisaria deletar a pasta onde ele foi criado (por exemplo, aps2).
+> **Observação:** O comando deactivate **apenas sai** do ambiente virtual; ele **não o apaga**. O ambiente virtual e todos os pacotes instalados nele permanecem salvos. Você pode reativá-lo a qualquer momento com o comando nome_do_ambiente\Scripts\activate. Para excluir o ambiente virtual completamente, você precisaria deletar a pasta onde ele foi criado (por exemplo, aps2). 
 
 ## 3. Git
 O Git é necessário para clonar o repositório do projeto.
