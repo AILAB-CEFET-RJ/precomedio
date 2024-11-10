@@ -10,7 +10,8 @@ O **Preço Médio** é uma aplicação Python criada para calcular o preço méd
 4. **Docker**: Para contêinerização da aplicação
 5. **Postman** ou **Insomnia**: Ferramentas para testar a API
 6. **SQLite**: Banco de dados integrado ao Django
-
+7. **Node**: Gerenciar pacotes e dependências de projetos JavaScript, como o **Create React App**.
+   
 ## 1. Python 
 
 1. Baixar o instalador do Python:
@@ -127,6 +128,23 @@ O projeto utiliza o **SQLite** como banco de dados. Para configurá-lo, execute 
      ```cmd
      python manage.py makemigrations PrecoMedioApp
      python manage.py migrate
+     ```
+## 7. NPM
+O **npm** é uma ferramenta fundamental para gerenciar pacotes e dependências de projetos JavaScript, como o **Create React App**. 
+
+1. **Instale o Node.js**: O **npm** vem junto com o Node.js. Para instalá-lo, vá até o site oficial: [nodejs.org](https://nodejs.org/) e baixe a versão recomendada para a maioria dos usuários.
+
+2. **Verifique a instalação**:
+   Após a instalação, abra o terminal ou prompt de comando e execute os seguintes comandos para verificar se o **Node.js** e o **npm** foram instalados corretamente:
+   
+   - Para verificar o Node.js:
+     ```
+     node -v
+     ```
+
+   - Para verificar o npm:
+     ```
+     npm -v
      ```
 
 ## Usando a aplicação:
