@@ -126,7 +126,11 @@ Essas ferramentas são usadas para enviar requisições HTTP para a API.
    - Acesse [Insomnia Downloads](https://insomnia.rest/download) e faça o download.
 
 ## 6. Banco de Dados SQLite
-O projeto utiliza o **SQLite** como banco de dados. Para configurá-lo, execute os seguintes comandos:
+O projeto utiliza o **SQLite** como banco de dados. 
+Você também pode instalar plugins para VSCode:
+   - Instale o `SQLite Viewer`, assim você conseguirá visualizar os dados em formato de tabelas no VSCode.
+
+Para configurar o SQLite, execute os seguintes comandos:
 
 1. **Aplicar Migrations do Django**:
    - Execute os comandos a seguir para configurar o banco de dados:
