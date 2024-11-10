@@ -10,7 +10,7 @@ O **Preço Médio** é uma aplicação Python criada para calcular o preço méd
 4. **Docker**: Para contêinerização da aplicação
 5. **Postman** ou **Insomnia**: Ferramentas para testar a API
 6. **SQLite**: Banco de dados integrado ao Django
-7. **Node**: Gerenciar pacotes e dependências de projetos JavaScript, como o **Create React App**.
+7. **NPM**: Gerenciar pacotes e dependências de projetos JavaScript, como o **Create React App**.
    
 ## 1. Python 
 
