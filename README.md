@@ -144,6 +144,8 @@ Para configurar o SQLite, execute os seguintes comandos:
      python manage.py makemigrations PrecoMedioApp
      python manage.py migrate
      ```
+3. **Consulte a documentação do SQLite3:**
+  - Demais dúvidas, consulte a [documentação](https://docs.python.org/3/library/sqlite3.html)
 ## 7. NPM
 O **npm** é uma ferramenta fundamental para gerenciar pacotes e dependências de projetos JavaScript, como o **Create React App**. 
 
