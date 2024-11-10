@@ -1,3 +1,75 @@
+Aqui está um guia rápido para configurar o Python e criar um ambiente virtual com todas as dependências necessárias:
+
+# 1. Instalar o Python 
+
+1. Baixar o instalador do Python:
+   - Acesse o site oficial do Python (https://www.python.org/downloads/) e baixe a versão mais recente.
+
+2. Instalar o Python:
+   - Execute o instalador baixado.
+   - Marque a opção "Add Python to PATH" na primeira tela do instalador. Isso facilita o uso do Python no Prompt de Comando.
+   - Clique em "Install Now" e aguarde a instalação.
+
+3. Verificar a instalação:
+   - Abra o Prompt de Comando (digite `cmd` no menu Iniciar).
+   - Digite `python --version` e pressione Enter. Você deve ver a versão do Python instalada, algo como `Python 3.x.x`.
+
+# 2. Criar um Ambiente Virtual 
+
+1. Acessar o diretório desejado:
+   - No Prompt de Comando, navegue até o diretório onde você quer criar o ambiente virtual. Por exemplo:
+     ```cmd
+     cd C:\Users\SeuUsuario
+     ```
+
+2. Criar o ambiente virtual:
+   - No Prompt de Comando, crie um ambiente virtual com o comando:
+     ```cmd
+     python -m venv nome_do_ambiente
+     ```
+   - Substitua `nome_do_ambiente` pelo nome que deseja dar ao ambiente virtual (por exemplo, `aps2`).
+
+3. Ativar o ambiente virtual:
+   - No Windows, use o comando:
+     ```cmd
+     nome_do_ambiente\Scripts\activate
+     ```
+   - Após a ativação, você verá o nome do ambiente virtual (por exemplo, `(aps2)`) antes do prompt, indicando que está ativo.
+
+# 3. Instalar Pacotes Necessários 
+
+1. Atualizar o pip:
+   - Com o ambiente ativado, atualize o pip para garantir a versão mais recente:
+     ```cmd
+     python -m pip install --upgrade pip
+     ```
+
+2. Instalar dependências:
+   - Instale as dependências que seu projeto ou ambiente pode precisar. Por exemplo, para instalar `requests` e `flask`, execute:
+     ```cmd
+     pip install requests flask
+     ```
+
+3. Verificar os pacotes instalados:
+   - Use o comando `pip list` para ver uma lista dos pacotes instalados no ambiente:
+     ```cmd
+     pip list
+     ```
+
+# 4. Desativar o Ambiente Virtual 
+
+Para sair do ambiente virtual e voltar ao prompt normal, basta digitar:
+
+```cmd
+deactivate
+```
+
+> **Observação:** O comando `deactivate` **apenas sai** do ambiente virtual; ele **não o apaga**. O ambiente virtual e todos os pacotes instalados nele permanecem salvos. Você pode reativá-lo a qualquer momento com o comando `nome_do_ambiente\Scripts\activate`. Para excluir o ambiente virtual completamente, você precisaria deletar a pasta onde ele foi criado (por exemplo, `aps2`).
+
+Agora você tem o ambiente virtual pronto para usar no Windows 10. 
+
+-----------
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
