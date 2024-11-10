@@ -25,6 +25,12 @@ O **Preço Médio** é uma aplicação Python criada para calcular o preço méd
 3. Verificar a instalação:
    - Abra o Prompt de Comando (digite `cmd` no menu Iniciar).
    - Digite `python --version` e pressione Enter. Você deve ver a versão do Python instalada, algo como `Python 3.x.x`.
+     
+4. Instalar Formatadores (opcional):
+   - Abra o Prompt de Comando (digite `cmd` no menu Iniciar).
+   - Digite `pip install flake8` para indicar formatos de código fora da convenção Python PEP8
+   - Digite `pip install black` para corrigir formatos de código fora da convenção Python PEP8
+   - Digite `pip install isort` para corrigir formatos de importação de pacotes fora da convenção Python PEP8
 
 ## 2. Ambiente Virtual
 ### 2.1. Acessar o diretório desejado:
