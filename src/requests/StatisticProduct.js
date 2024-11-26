@@ -21,7 +21,7 @@ export const GetStatisticMeanProduct = async(paramts)=>{
 export const GetStatisticLowerProduct = async(paramts)=>{
   let dataStatisticLower = null;
   paramts = paramts.trim().split(" ");
-  const url1 = basicUrl+"lowprice/"+paramts[0]+"/"+paramts[1];
+  const url1 = basicUrl+"lowestPrice/"+paramts[0]+"/"+paramts[1];
   const   funcGetProducts = async() => {
       let mean = await fetch(url1, {
           method: "GET",

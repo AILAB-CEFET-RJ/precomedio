@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, re_path
-from PrecoMedioApp.views import search, login, signup, averagePrice, lowPrice
+from PrecoMedioApp.views import search, login, signup, averagePrice, lowestPrice
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -24,6 +24,6 @@ urlpatterns = [
     re_path('login', login),
     re_path('signup', signup),
     path('preco/<str:model>', averagePrice, name='averagePrice'),
-    path('lowprice/<str:model>/<str:storage>/', lowPrice, name='lowPrice'),
-    path('lowprice/<str:model>/', lowPrice, name='lowPriceWithoutStorage')
+    path('lowestPrice/<str:model>/<str:storage>/', lowestPrice, name='lowestPrice'),
+    path('lowestPrice/<str:model>/', lowestPrice, name='lowestPriceWithoutStorage')
 ]
