@@ -3,7 +3,7 @@ from .models import Products, PriceTracker
 from datetime import datetime
 from django.db.models import Min
 from .text_processing import get_brand
-
+import statistics
 
 def save_product_and_price(products_list, searchString):
     for storage_size, data in products_list.items():
@@ -63,6 +63,7 @@ def get_price_trackers_by_title_and_storage(title, storage):
         return PriceTracker.objects.filter(Model__icontains=title)
     
 
+from PrecoMedioApp.text_processing import detectar_outliers
 def get_product_with_lowest_price(model, storage=None):
     if storage:
         search_string = f"{model} {storage}"
@@ -72,8 +73,33 @@ def get_product_with_lowest_price(model, storage=None):
 
     if not products.exists():
         return None
-
-    products_with_min_price = products.annotate(min_price=Min('Price'))
-    product_with_lowest_price = products_with_min_price.order_by('min_price').first()
     
+    prices = []
+
+    for product in products:
+        price = float(product.Price)
+        prices.append(price)
+
+    average = round(statistics.mean(prices), 2)
+    standard_deviation = statistics.stdev(prices)
+    
+    upper_limit = average + standard_deviation
+    under_limit = average - standard_deviation
+        
+    prices_without_outliers = [preco for preco in prices if under_limit <= preco <= upper_limit]
+    
+    product_with_lowest_price = {
+        'lowestPrice': min(prices_without_outliers),
+        'productName': None
+    }
+    for product in products:
+        if float(product.Price) == product_with_lowest_price['lowestPrice']:
+            product_with_lowest_price['productName'] = product.SearchString
+            break  # Para assim que encontrar o produto correspondente
+    
+    # products_with_min_price = products.annotate(min_price=Min('Price'))
+    # product_with_lowest_price = products_with_min_price.order_by('min_price').first()
+
+
     return product_with_lowest_price
+    

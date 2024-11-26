@@ -42,12 +42,13 @@ def similar(a, b):
 
 
 def get_brand(model):
-    for marca in marcas_smartphone:
-        if marca.lower() in model.lower():
-            return marca
-    return 'Apple'  
+    model_lower = model.lower()
+    matched_brands = [brand for brand in smartphone_brands if brand.lower() in model_lower]
+    if matched_brands:
+        return matched_brands[0]
+    return 'Unknown Brand'
 
-marcas_smartphone = [
+smartphone_brands = [
     "Apple", "Samsung", "Huawei", "Xiaomi", "OnePlus", "Google", "Sony", "LG",
     "Motorola", "Nokia", "HTC", "BlackBerry", "Lenovo", "ASUS", "Oppo", "Vivo",
     "Realme", "ZTE", "Alcatel", "Meizu", "TCL", "Honor", "Infinix", "Micromax",

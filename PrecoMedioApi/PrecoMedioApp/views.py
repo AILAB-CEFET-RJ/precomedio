@@ -77,11 +77,11 @@ def averagePrice(request, model:str, storage: str = None):
 @api_view(['GET'])
 #@authentication_classes([SessionAuthentication,TokenAuthentication])
 #@permission_classes([IsAuthenticated])
-def lowPrice(request, model: str, storage: str = None):
+def lowestPrice(request, model: str, storage: str = None):
     if request.method == 'GET':
-        productLowPrice = get_product_with_lowest_price(model, storage)
-        if productLowPrice:
-          message = f"O menor valor do produto {productLowPrice.SearchString} e R${productLowPrice.Price:.2f}"
+        productlowestPrice = get_product_with_lowest_price(model, storage)
+        if productlowestPrice:
+          message = f"O menor valor do {productlowestPrice['productName']} é R${productlowestPrice['lowestPrice']:.2f}"
           return JsonResponse({'message': message}, safe=False, status=200)
         else:
             return JsonResponse({'message': 'Product not found'}, status=404)
