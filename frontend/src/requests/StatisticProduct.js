@@ -1,9 +1,9 @@
 const basicUrl = "http://127.0.0.1:8000/";
-export const GetStatisticMeanProduct = async(paramts)=>{
+export const GetStatisticMeanProduct = async(params)=>{
   let dataStatisticMean = null;
-  paramts = paramts.trim().split(" ");
-  const url = basicUrl+"preco/"+paramts[0].toLowerCase().split("iphone")[1];
-  const   funcGetProducts = async() => {
+  params = params.trim().split(" ");
+  const url = basicUrl+"averagePrice/"+params[0]+"/"+params[1];
+  const funcGetProducts = async() => {
       let mean = await fetch(url, {
           method: "GET",
           headers: {
@@ -15,15 +15,15 @@ export const GetStatisticMeanProduct = async(paramts)=>{
       return mean
   }
   dataStatisticMean = await funcGetProducts();
-  return dataStatisticMean.message.split("R$")[1]
+  return dataStatisticMean.mean
    
 }
-export const GetStatisticLowerProduct = async(paramts)=>{
+export const GetStatisticLowerProduct = async(params)=>{
   let dataStatisticLower = null;
-  paramts = paramts.trim().split(" ");
-  const url1 = basicUrl+"lowestPrice/"+paramts[0]+"/"+paramts[1];
+  params = params.trim().split(" ");
+  const url = basicUrl+"lowestPrice/"+params[0]+"/"+params[1];
   const   funcGetProducts = async() => {
-      let mean = await fetch(url1, {
+      let lowestPrice = await fetch(url, {
           method: "GET",
           headers: {
               "Content-Type": "application/json",
@@ -31,9 +31,9 @@ export const GetStatisticLowerProduct = async(paramts)=>{
           }
          
       }).then(data => data.json()).catch(error => error)
-      return mean
+      return lowestPrice
   }
   dataStatisticLower = await funcGetProducts();
-  return dataStatisticLower.message.split("R$")[1]
+  return dataStatisticLower.lowestPrice
    
 }

@@ -1,7 +1,7 @@
 import re
 from .models import Products, PriceTracker
-from datetime import datetime
-from django.db.models import Min
+from django.utils import timezone
+
 from .text_processing import get_brand
 import statistics
 
@@ -15,10 +15,8 @@ def save_product_and_price(products_list, searchString):
             product = get_or_create_product(modelo,storage_size,get_brand(modelo))
             price_tracker = create_priceTracker(modelo,preco,product,searchString,vendedor)
 
-
 def get_all_price_trackers():
     return PriceTracker.objects.all()
-
 
 def get_or_create_product(title, storage, brand):
     product, _ = Products.objects.get_or_create(
@@ -31,7 +29,7 @@ def get_or_create_product(title, storage, brand):
 def create_priceTracker(title, price, product,model, supplier):
     PriceTracker.objects.create(
         Model=title,
-        DateOfSearch=datetime.now(),  
+        DateOfSearch= timezone.now(),  
         Price=price,
         SearchString=model,  
         Product=product,
@@ -46,8 +44,8 @@ def get_price_trackers_by_title(model, storage=None):
     products = PriceTracker.objects.filter(SearchString__icontains=model)
   return products
 
-
 def get_price_trackers_by_title_and_storage(title, storage):
+    today = timezone.now().date() 
     if storage:
         storage_number = None
         storage_numbers = re.findall(r'\d+', storage)
@@ -57,49 +55,52 @@ def get_price_trackers_by_title_and_storage(title, storage):
         title = re.sub(r'(\d+)', r' \1', title).strip()
 
         if storage_number is not None:
-            return PriceTracker.objects.filter(Model__icontains=title, Product__StorageGB=storage_number)
+            today = timezone.now().date() 
+            products = PriceTracker.objects.filter(Model__icontains=title,
+                                               Product__StorageGB=storage_number,
+                                               DateOfSearch__date=today
+                                               )
     else:
         title = re.sub(r'(\d+)', r' \1', title).strip()
-        return PriceTracker.objects.filter(Model__icontains=title)
+        products = PriceTracker.objects.filter(
+            Model__icontains=title,
+            DateOfSearch__date = today
+        )
     
+    unique_products = {}
+    for product in products:
+        
+        key = (product.Model, product.Price)  
+        if key not in unique_products:
+            unique_products[key] = product  
 
+    return list(unique_products.values())  # retorna uma lista de produtos unicos, tentei distinct mas nao é suportado
+    
 from PrecoMedioApp.text_processing import detectar_outliers
 def get_product_with_lowest_price(model, storage=None):
-    if storage:
-        search_string = f"{model} {storage}"
-        products = PriceTracker.objects.filter(SearchString__icontains=search_string)
-    else:
-        products = PriceTracker.objects.filter(SearchString__icontains=model)
+    print(model, storage)
+    products = get_price_trackers_by_title_and_storage(model, storage)
+    filtered_products = detectar_outliers(products)
 
-    if not products.exists():
-        return None
+    if not filtered_products:
+        return {'lowestPrice': None, 'productName': None}  # Retorna None se não houver produtos válidos
     
-    prices = []
-
-    for product in products:
-        price = float(product.Price)
-        prices.append(price)
-
-    average = round(statistics.mean(prices), 2)
-    standard_deviation = statistics.stdev(prices)
+    product_with_lowest_price = min(filtered_products, key=lambda p: float(p.Price))
     
-    upper_limit = average + standard_deviation
-    under_limit = average - standard_deviation
-        
-    prices_without_outliers = [preco for preco in prices if under_limit <= preco <= upper_limit]
-    
-    product_with_lowest_price = {
-        'lowestPrice': min(prices_without_outliers),
-        'productName': None
+    return {
+        'lowestPrice': product_with_lowest_price.Price,
+        'productName': product_with_lowest_price.SearchString
     }
-    for product in products:
-        if float(product.Price) == product_with_lowest_price['lowestPrice']:
-            product_with_lowest_price['productName'] = product.SearchString
-            break  # Para assim que encontrar o produto correspondente
     
-    # products_with_min_price = products.annotate(min_price=Min('Price'))
-    # product_with_lowest_price = products_with_min_price.order_by('min_price').first()
-
-
-    return product_with_lowest_price
+def get_average_price(model, storage=None):
+    print(model, storage)
+    products = get_price_trackers_by_title_and_storage(model, storage)
+    filtered_products = detectar_outliers(products)
     
+    if not filtered_products:
+        return None
+
+    prices_without_outliers = [float(product.Price) for product in filtered_products]
+    average_price = round(sum(prices_without_outliers) / len(prices_without_outliers), 2)
+    
+    return average_price

@@ -16,25 +16,20 @@ def obter_preco(price_text):
 
     return decimal_price
 
-#Usar esse metodo no endpoint preco medio
 def detectar_outliers(products):
-    prices = []
+    prices = [float(product.Price) for product in products]
+    average = statistics.mean(prices) 
+    standard_deviation = statistics.stdev(prices) 
 
-    for product in products:
-        price = float(product.Price)
-        prices.append(price)
-
-    average = round(statistics.mean(prices), 2)
-    standard_deviation = statistics.stdev(prices)
-    
     upper_limit = average + standard_deviation
-    under_limit = average - standard_deviation
-        
-    prices_without_outliers = [preco for preco in prices if under_limit <= preco <= upper_limit]
+    lower_limit = average - standard_deviation
+
+    products_without_outliers = [
+        product for product in products 
+        if lower_limit <= float(product.Price) <= upper_limit
+    ]
     
-    average_without_outliers = round(statistics.mean(prices_without_outliers), 2)
-    
-    return average_without_outliers
+    return products_without_outliers  
 
 
 def similar(a, b):

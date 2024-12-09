@@ -1,8 +1,8 @@
 const basicUrl = "http://127.0.0.1:8000/"
-export const GetProducts = async(paramts)=>{
+export const GetProducts = async(params)=>{
     let prods = null;
-    paramts = paramts.trim().split(" ");
-    const url = basicUrl+"search/"+paramts[0]+"/"+paramts[1];
+    params = params.trim().split(" ");
+    const url = basicUrl+"search/"+params[0]+"/"+params[1];
     const   funcGetProducts = async() => {
         let products = await fetch(url, {
             method: "GET",

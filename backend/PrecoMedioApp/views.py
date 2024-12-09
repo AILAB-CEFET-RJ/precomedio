@@ -6,12 +6,13 @@ from rest_framework import status
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
-from .db_operations import get_all_price_trackers, get_price_trackers_by_title_and_storage, get_product_with_lowest_price, get_price_trackers_by_title
+
+from .text_processing import detectar_outliers
+from .db_operations import get_all_price_trackers, get_average_price, get_price_trackers_by_title_and_storage, get_product_with_lowest_price, get_price_trackers_by_title
 from .utils import extrair_resultados, fazer_pesquisa, obter_modelos_e_precos
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from rest_framework.decorators import authentication_classes, permission_classes
 from rest_framework.permissions import IsAuthenticated
-from .text_processing import detectar_outliers
 
 from .serializers import PriceTrackerSerializer, UserSerializer
 
@@ -27,7 +28,9 @@ def search(request, model:str, storage: str):
         soup_ads, soup_results = extrair_resultados(soup)
         obter_modelos_e_precos(soup_results, soup_ads, search_query)
         products = get_price_trackers_by_title_and_storage(model,storage)
-        serialized_priceTrackers = PriceTrackerSerializer(products, many=True).data  
+        filtered_products = detectar_outliers(products)
+        
+        serialized_priceTrackers = PriceTrackerSerializer(filtered_products, many=True).data  
 
         return JsonResponse(serialized_priceTrackers, safe=False, status=200)
     else:
@@ -66,11 +69,8 @@ def test_token(request):
 @permission_classes([IsAuthenticated])   
 def averagePrice(request, model:str, storage: str = None):
     if request.method == 'GET':
-        products = get_price_trackers_by_title(model, storage)
-        average = detectar_outliers(products)
-        message = f"O preço médio do produto {model} é R$ {average:.2f}"
-        
-        return Response({"message": message})
+        mean = get_average_price(model, storage)
+        return Response({"mean": mean})
     else:
         return JsonResponse({'message': 'Method not allowed'}, status=405)
     
@@ -81,8 +81,7 @@ def lowestPrice(request, model: str, storage: str = None):
     if request.method == 'GET':
         productlowestPrice = get_product_with_lowest_price(model, storage)
         if productlowestPrice:
-          message = f"O menor valor do {productlowestPrice['productName']} é R${productlowestPrice['lowestPrice']:.2f}"
-          return JsonResponse({'message': message}, safe=False, status=200)
+          return JsonResponse({'lowestPrice': productlowestPrice['lowestPrice']}, safe=False, status=200)
         else:
             return JsonResponse({'message': 'Product not found'}, status=404)
     else:

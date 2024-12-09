@@ -22,11 +22,10 @@ const Login = () => {
             let { token } = await PostUsersLogin(data1.user, data1.password);
             if (token !== undefined) {
                 setAuth(localStorage.setItem("authToken", token))
-                nav("/home");
             } else {
                 setErroForm("Erro no usuario ou senha");
-                nav("/");
             }
+            nav("/");
         } catch (e) {
             alert("Erro no servidor");
             console.log("Erro no servidor");

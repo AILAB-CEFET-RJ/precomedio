@@ -2,7 +2,7 @@ import requests
 import re
 from bs4 import BeautifulSoup
 from .db_operations import create_priceTracker, get_or_create_product, save_product_and_price, get_price_trackers_by_title
-from .text_processing import obter_preco, similar, get_brand, detectar_outliers
+from .text_processing import obter_preco, similar, get_brand
 
 
 def fazer_pesquisa(pesquisa):

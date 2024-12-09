@@ -13,7 +13,7 @@ const HomeComponent = () => {
   const [statistical_lower, setStatistical_lower] = useState(null);
   const [numpages, setNumPages] = useState([]);
   const [load, setLoad] = useState(false);
-  const [prodSlice, setprodSlice] = useState([])
+  const [prodSlice, setProdSlice] = useState([])
   let num = 0;
   let listNum = [];
   const { register, handleSubmit, reset, formState: { errors } } = useForm({
@@ -34,20 +34,21 @@ const HomeComponent = () => {
   }
   const onSubmit = async (data1) => {
     setLoad(true);
+
     try {
       let res = await Promise.all([
+        GetProducts(data1.search_product_home),
         GetStatisticMeanProduct(data1.search_product_home),
-        GetStatisticLowerProduct(data1.search_product_home),
-        GetProducts(data1.search_product_home)
+        GetStatisticLowerProduct(data1.search_product_home)
       ]);
-      let [dataStatisticMean, dataStatisticLower, prods] = res;
-      setprodSlice(prods);
+      let [prods, dataStatisticMean, dataStatisticLower] = res; // 5293.33	 3059.1
+
+      setProdSlice(prods);
       [prods, listNum] = Pagination(prods, num, null);
       setNumPages([...listNum]);
-      setStatistical_mean(dataStatisticMean);
       setStatistical_lower(dataStatisticLower);
+      setStatistical_mean(dataStatisticMean);
       setProductChosen(prods);
-
     } catch (e) {
       alert("Erro no servidor");
       console.log("Erro no servidor");
@@ -94,12 +95,12 @@ const HomeComponent = () => {
                   </thead>
                   <tbody>
                       <tr>
-                        <td className="text-center">{statistical_mean ? statistical_mean.replace(".", ","):<span style={{color:"red"}}>-</span>}</td>
+                        <td className="text-center">{statistical_mean ? statistical_mean:<span style={{color:"red"}}>-</span>}</td>
                         {/*
                     <td>-</td>
                     <td>-</td>
                     <td>-</td> */}
-                        <td className="text-center">{statistical_lower ? statistical_lower.replace(".", ","):<span style={{color:"red"}}>-</span>}</td>
+                        <td className="text-center">{statistical_lower ? statistical_lower:<span style={{color:"red"}}>-</span>}</td>
                         {/*<td>-</td>*/}
                       </tr>
                   </tbody>

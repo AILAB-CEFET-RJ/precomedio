@@ -23,7 +23,9 @@ urlpatterns = [
     path('search/<str:model>/<str:storage>/', search, name='search'),
     re_path('login', login),
     re_path('signup', signup),
-    path('preco/<str:model>', averagePrice, name='averagePrice'),
+    path('averagePrice/<str:model>/<str:storage>/', averagePrice, name='averagePrice'),
+    path('averagePrice/<str:model>', averagePrice, name='averagePriceWithoutStorage'),
+
     path('lowestPrice/<str:model>/<str:storage>/', lowestPrice, name='lowestPrice'),
     path('lowestPrice/<str:model>/', lowestPrice, name='lowestPriceWithoutStorage')
 ]
