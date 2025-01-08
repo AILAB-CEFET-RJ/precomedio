@@ -36,30 +36,24 @@ const HomeComponent = () => {
     setLoad(true);
 
     try {
-      let res = await Promise.all([
-        GetProducts(data1.search_product_home),
-        GetStatisticMeanProduct(data1.search_product_home),
-        GetStatisticLowerProduct(data1.search_product_home)
-      ]);
-      let [prods, dataStatisticMean, dataStatisticLower] = res; // 5293.33	 3059.1
+      let res = await GetProducts(data1.search_product_home);
+      let { products, mean, lowestPrice } = res;
 
-      setProdSlice(prods);
-      [prods, listNum] = Pagination(prods, num, null);
+      setProdSlice(products);
+      [products, listNum] = Pagination(products, num, null);
       setNumPages([...listNum]);
-      setStatistical_lower(dataStatisticLower);
-      setStatistical_mean(dataStatisticMean);
-      setProductChosen(prods);
+      setStatistical_lower(lowestPrice);
+      setStatistical_mean(mean);
+      setProductChosen(products);
     } catch (e) {
       alert("Erro no servidor");
       console.log("Erro no servidor");
     }
-
     setLoad(false);
 
   }
   return (
     <>
-
       <div id="container-fluid container2">
         <Header mainTitle="Preço Médio" title="Favorito" path="/historicoProduto" />
         {load ? <div><img src={"images/loading.gif"} className="imageIconeLoad" /></div> :

@@ -29,10 +29,12 @@ def search(request, model:str, storage: str):
         obter_modelos_e_precos(soup_results, soup_ads, search_query)
         products = get_price_trackers_by_title_and_storage(model,storage)
         filtered_products = detectar_outliers(products)
-        
         serialized_priceTrackers = PriceTrackerSerializer(filtered_products, many=True).data  
-
-        return JsonResponse(serialized_priceTrackers, safe=False, status=200)
+        # Pegar média e menor valor
+        productlowestPrice = get_product_with_lowest_price(serialized_priceTrackers)
+        mean = get_average_price(serialized_priceTrackers)
+        
+        return JsonResponse({'lowestPrice': productlowestPrice['lowestPrice'], "mean": mean, "products": serialized_priceTrackers}, safe=False, status=200)
     else:
         return JsonResponse({'message': 'Method not allowed'}, status=405)
     
@@ -63,26 +65,3 @@ def signup(request):
 @permission_classes([IsAuthenticated])
 def test_token(request):
     return Response({})
-
-@api_view(['GET'])
-@authentication_classes([SessionAuthentication,TokenAuthentication])
-@permission_classes([IsAuthenticated])   
-def averagePrice(request, model:str, storage: str = None):
-    if request.method == 'GET':
-        mean = get_average_price(model, storage)
-        return Response({"mean": mean})
-    else:
-        return JsonResponse({'message': 'Method not allowed'}, status=405)
-    
-@api_view(['GET'])
-#@authentication_classes([SessionAuthentication,TokenAuthentication])
-#@permission_classes([IsAuthenticated])
-def lowestPrice(request, model: str, storage: str = None):
-    if request.method == 'GET':
-        productlowestPrice = get_product_with_lowest_price(model, storage)
-        if productlowestPrice:
-          return JsonResponse({'lowestPrice': productlowestPrice['lowestPrice']}, safe=False, status=200)
-        else:
-            return JsonResponse({'message': 'Product not found'}, status=404)
-    else:
-        return JsonResponse({'message': 'Method not allowed'}, status=405)

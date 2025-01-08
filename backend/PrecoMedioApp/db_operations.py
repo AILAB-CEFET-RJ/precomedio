@@ -73,34 +73,25 @@ def get_price_trackers_by_title_and_storage(title, storage):
         key = (product.Model, product.Price)  
         if key not in unique_products:
             unique_products[key] = product  
-
     return list(unique_products.values())  # retorna uma lista de produtos unicos, tentei distinct mas nao é suportado
     
-from PrecoMedioApp.text_processing import detectar_outliers
-def get_product_with_lowest_price(model, storage=None):
-    print(model, storage)
-    products = get_price_trackers_by_title_and_storage(model, storage)
-    filtered_products = detectar_outliers(products)
-
-    if not filtered_products:
+def get_product_with_lowest_price(products):
+    if not products:
         return {'lowestPrice': None, 'productName': None}  # Retorna None se não houver produtos válidos
     
-    product_with_lowest_price = min(filtered_products, key=lambda p: float(p.Price))
-    
+    product_with_lowest_price = min(products, key=lambda p: float(p['Price']))
+    print(product_with_lowest_price['Price'])
     return {
-        'lowestPrice': product_with_lowest_price.Price,
-        'productName': product_with_lowest_price.SearchString
+        'lowestPrice': product_with_lowest_price['Price'],
+        'productName': product_with_lowest_price['SearchString']
     }
     
-def get_average_price(model, storage=None):
-    print(model, storage)
-    products = get_price_trackers_by_title_and_storage(model, storage)
-    filtered_products = detectar_outliers(products)
-    
-    if not filtered_products:
+def get_average_price(products):
+
+    if not products:
         return None
 
-    prices_without_outliers = [float(product.Price) for product in filtered_products]
+    prices_without_outliers = [float(product['Price']) for product in products]
     average_price = round(sum(prices_without_outliers) / len(prices_without_outliers), 2)
-    
+    print(average_price)
     return average_price

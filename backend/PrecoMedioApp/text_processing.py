@@ -17,19 +17,19 @@ def obter_preco(price_text):
     return decimal_price
 
 def detectar_outliers(products):
-    prices = [float(product.Price) for product in products]
-    average = statistics.mean(prices) 
-    standard_deviation = statistics.stdev(prices) 
-
-    upper_limit = average + standard_deviation
-    lower_limit = average - standard_deviation
-
-    products_without_outliers = [
-        product for product in products 
-        if lower_limit <= float(product.Price) <= upper_limit
-    ]
-    
-    return products_without_outliers  
+    print('lalala',products)
+    prices = [Decimal(product.Price) for product in products]
+    if len(prices) > 1:
+        average = sum(prices)/len(prices)
+        standard_deviation = statistics.stdev([float(price) for price in prices]) 
+        upper_limit = Decimal(average) + Decimal(standard_deviation)
+        lower_limit = Decimal(average) - Decimal(standard_deviation)
+        products_without_outliers = [
+            product for product in products 
+            if lower_limit <= Decimal(product.Price) <= upper_limit
+        ]
+        return products_without_outliers  
+    return products
 
 
 def similar(a, b):
