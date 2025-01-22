@@ -42,11 +42,11 @@ const Login = () => {
                     <h6 style={{ color: "orange" }}>{errorForm && messageErrorForm}</h6>
                     <form className="my-3" >
                         <label htmlFor="user">
-                            <input type="text" {...register("user")} name="user" id="user" placeholder="nome do usuário" />
+                            <input type="text" {...register("user")} name="user" id="user" placeholder="Nome do usuário" />
                         </label>
                         <div style={{ color: "orange" }}>{errors.user?.message}</div>
                         <label htmlFor="password">
-                            <input type="password" {...register("password")} name="password" id="password" placeholder="senha" />
+                            <input type="password" {...register("password")} name="password" id="password" placeholder="Senha" />
                         </label>
                         <div style={{ color: "orange" }}>{errors.password?.message}</div>
                         <label className="my-3" id="enviar_dados_login">

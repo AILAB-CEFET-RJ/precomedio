@@ -31,7 +31,7 @@ const Modal = (prop) => {
 
                 <div style={Modal_Style}>
                     <h4 className="text-success" style={{ textAlign: "center", fontWeight: "bold" }}>Web Scraping</h4>
-                    <p>Este trabalho foi desenvolvido pelos alunos  Allan, Lucas e Rodrigo que estudam na CEFET-RJ e
+                    <p>Este trabalho foi desenvolvido pelos alunos Allan, Lucas, Rodrigo, Arthur, Gabriel, Dayvison e Karen que estudam na CEFET-RJ e
                         fazem ciência da computação. Esse site tem como objetivo calcular os preço médios dos produtos através da utilização
                         de web scraping. O Web Scraping permite a coleta de dados em sites específicos e pode gerar insights valiosos
                         para o seu negócio. Essa espécie de “garimpo” da internet envolve extrair informações relevantes

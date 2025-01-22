@@ -6,7 +6,6 @@ import { Pagination } from "./Pagination";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import SchemaHome from "../schemas/SchemaHome";
-import { GetStatisticMeanProduct, GetStatisticLowerProduct } from "../requests/StatisticProduct";
 const HomeComponent = () => {
   const [productChosen, setProductChosen] = useState([]);
   const [statistical_mean, setStatistical_mean] = useState(null);
@@ -55,9 +54,9 @@ const HomeComponent = () => {
   return (
     <>
       <div id="container-fluid container2">
-        <Header mainTitle="Preço Médio" title="Favorito" path="/historicoProduto" />
+        <Header/>
         {load ? <div><img src={"images/loading.gif"} className="imageIconeLoad" /></div> :
-          <section>
+          <section className="pt-5">
             <article>
               <form className="row gy-2 gx-3  align-items-center">
                 <div className="col-auto">
@@ -67,7 +66,7 @@ const HomeComponent = () => {
                 </div>
                 <div className="col-auto">
                   <div className="col-auto">
-                    <button id="enviar-produto-pesquisa" className="btn btn-primary" onClick={handleSubmit(onSubmit)}>Pesquisar iphone</button>
+                    <button id="enviar-produto-pesquisa" className="btn" onClick={handleSubmit(onSubmit)}>Pesquisar iphone</button>
                     <button id="limpar-produto" onClick={() => reset()} className="btn btn-danger mx-1">Limpar</button>
                   </div>
                 </div>
@@ -79,22 +78,22 @@ const HomeComponent = () => {
                 <table className="table table-striped ">
                   <thead className="thead-dark">
                     <tr >
-                      <th scope="col" className="text-success text-center">Média</th>
+                      <th id="item-statistic-table" scope="col" className="text-center">Média</th>
                       {/*<th scope="col" className="text-success">Mediana</th>
                   <th scope="col" className="text-success">Desvio Padrão</th>
                   <th scope="col" className="text-success">Variância</th>*/}
-                      <th scope="col" className="text-success text-center">Menor valor</th>
+                      <th id="item-statistic-table" scope="col" className="text-center">Menor valor</th>
                       {/*<th scope="col" className="text-success">Maior valor</th>*/}
                     </tr>
                   </thead>
                   <tbody>
                       <tr>
-                        <td className="text-center">{statistical_mean ? statistical_mean:<span style={{color:"red"}}>-</span>}</td>
+                        <td className="text-center">{statistical_mean ? statistical_mean:<span style={{ backgroundColor:"#f2f2f2", color:"red"}}>-</span>}</td>
                         {/*
                     <td>-</td>
                     <td>-</td>
                     <td>-</td> */}
-                        <td className="text-center">{statistical_lower ? statistical_lower:<span style={{color:"red"}}>-</span>}</td>
+                        <td className="text-center">{statistical_lower ? statistical_lower:<span style={{backgroundColor:"#f2f2f2",color:"red"}}>-</span>}</td>
                         {/*<td>-</td>*/}
                       </tr>
                   </tbody>
@@ -105,12 +104,12 @@ const HomeComponent = () => {
               <div className="table-responsive">
                 <table className="table table-striped">
                   <thead className="thead-dark">
-                    <tr>
-                      <th className="align-middle text-primary" scope="col">Modelo</th>
-                      <th className="align-middle text-primary" scope="col">Preço</th>
-                      <th className="align-middle text-primary" scope="col">Fornecedor</th>
-                      <th className="align-middle text-primary" scope="col">Armazenamento</th>
-                      <th className="align-middle text-primary" scope="col">Data</th>
+                    <tr >
+                      <th id="item-header-table" className="align-middle" scope="col">Modelo</th>
+                      <th id="item-header-table" className="align-middle" scope="col">Preço</th>
+                      <th id="item-header-table" className="align-middle" scope="col">Fornecedor</th>
+                      <th id="item-header-table" className="align-middle" scope="col">Armazenamento</th>
+                      <th id="item-header-table" className="align-middle" scope="col">Data</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -122,12 +121,12 @@ const HomeComponent = () => {
                         <td>{prod.Supplier}</td>
                         <td> {prod.SearchString.split(" ")[1]}</td>
                         <td>{prod.DateOfSearch.split(/((\d){2,4}-(\d){2,2}-(\d){2,2})/)[1]}</td>
-                      </tr>)) : <h5 className="h6 text-danger">Nenhum dado carregado</h5>
+                      </tr>)) : <h5 style={{color: "#7d0000"}} className="h6">Nenhum dado carregado</h5>
                     }
                   </tbody>
                 </table>
                 {productChosen && <tr className="my-5">
-                  <td className="d-flex my-5 align-items-center justify-content-end"><button className="text-success text-light border-warning btn btn-warning btn-sm">Adicionar ao favorito</button></td>
+                  <td className="d-flex my-3 align-items-center justify-content-end"><button style={{backgroundColor: "#fcfd87", color: "#2f3f2e"}} className="btn btn-sm">Adicionar ao favorito</button></td>
                 </tr>
                 }
               </div>

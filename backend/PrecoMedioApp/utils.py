@@ -31,7 +31,7 @@ def extrair_resultados(soup):
 
 
 def obter_modelos_e_precos(soup_results, soup_ads, model):
-    palavras_proibidas = ["vitrine", "usado", "recondicionado", "Sou como novo", "Como Novo", "Zerado", "Seminovo", "Semi novo"]
+    palavras_proibidas = ["vitrine", "usado", "recondicionado", "como novo", "zerado", "seminovo", "semi novo", "renovada", "renovado"]
     list_priceTracker = []
 
     for result in soup_results:

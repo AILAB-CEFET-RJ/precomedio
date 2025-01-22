@@ -50,7 +50,7 @@ const HistoryProduct = () => {
                     <img title="excluir produto" id={prod.id} className="deletarProduto deletProduto" src="images/lixeira.jpg" alt="excluir" />
 
                   </td>
-                </tr>)) : <h5 className="h6 text-danger">Nenhum dado carregado</h5>
+                </tr>)) : <h5 style={{color: "#7d0000"}} className="h6">Nenhum dado carregado</h5>
               }</tbody>
           </table>
         </div>
