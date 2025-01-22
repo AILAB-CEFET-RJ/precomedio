@@ -26,8 +26,8 @@ def search(request, model:str, storage: str):
         search_query = f"{model} {storage}"
         soup = fazer_pesquisa(search_query)
         soup_ads, soup_results = extrair_resultados(soup)
-        obter_modelos_e_precos(soup_results, soup_ads, search_query)
-        products = get_price_trackers_by_title_and_storage(model,storage)
+        products_with_filters = obter_modelos_e_precos(soup_results, soup_ads, search_query)
+        products = get_price_trackers_by_title_and_storage(products_with_filters)
         filtered_products = detectar_outliers(products)
         serialized_priceTrackers = PriceTrackerSerializer(filtered_products, many=True).data  
         # Pegar média e menor valor

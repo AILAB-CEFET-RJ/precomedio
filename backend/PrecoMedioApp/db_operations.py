@@ -44,29 +44,7 @@ def get_price_trackers_by_title(model, storage=None):
     products = PriceTracker.objects.filter(SearchString__icontains=model)
   return products
 
-def get_price_trackers_by_title_and_storage(title, storage):
-    today = timezone.now().date() 
-    if storage:
-        storage_number = None
-        storage_numbers = re.findall(r'\d+', storage)
-        if storage_numbers:
-            storage_number = int(storage_numbers[0])
-        
-        title = re.sub(r'(\d+)', r' \1', title).strip()
-
-        if storage_number is not None:
-            today = timezone.now().date() 
-            products = PriceTracker.objects.filter(Model__icontains=title,
-                                               Product__StorageGB=storage_number,
-                                               DateOfSearch__date=today
-                                               )
-    else:
-        title = re.sub(r'(\d+)', r' \1', title).strip()
-        products = PriceTracker.objects.filter(
-            Model__icontains=title,
-            DateOfSearch__date = today
-        )
-    
+def get_price_trackers_by_title_and_storage(products):
     unique_products = {}
     for product in products:
         

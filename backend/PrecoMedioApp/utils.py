@@ -3,6 +3,8 @@ import re
 from bs4 import BeautifulSoup
 from .db_operations import create_priceTracker, get_or_create_product, save_product_and_price, get_price_trackers_by_title
 from .text_processing import obter_preco, similar, get_brand
+from .models import Products, PriceTracker
+from django.utils import timezone
 
 
 def fazer_pesquisa(pesquisa):
@@ -30,6 +32,7 @@ def extrair_resultados(soup):
 
 def obter_modelos_e_precos(soup_results, soup_ads, model):
     palavras_proibidas = ["vitrine", "usado", "recondicionado", "Sou como novo", "Como Novo", "Zerado", "Seminovo", "Semi novo"]
+    list_priceTracker = []
 
     for result in soup_results:
         title = result.find(re.compile('^h\d$')).get_text()
@@ -37,7 +40,9 @@ def obter_modelos_e_precos(soup_results, soup_ads, model):
             storage_match = re.search(r'\d+GB', title)
             if storage_match:
                 storage_size = storage_match.group()
-                product = get_or_create_product(title, storage_size, get_brand(title))
+                product = Products(Model=title,
+                                   StorageGB=int(storage_size[:-2]),
+                                   Brand=get_brand(title))
                 price_element = result.find("span", {"class": "a8Pemb OFFNJ"})
                 supplier_span = result.find("div", {"class": "aULzUe IuHnof"})
                 supplier = supplier_span.get_text(strip=True) if supplier_span else None
@@ -46,7 +51,14 @@ def obter_modelos_e_precos(soup_results, soup_ads, model):
                     price = obter_preco(price_text)
                     if price is not None:
                         if not has_similar_product(title, model):
-                            create_priceTracker(title, price, product, model, supplier)
+                            unidade_priceTracker = PriceTracker(Model=title,
+                                                                DateOfSearch=timezone.now(),
+                                                                Price = price,
+                                                                SearchString=model,
+                                                                Product=product,
+                                                                Supplier=supplier)
+                            
+                            list_priceTracker.append(unidade_priceTracker)
 
     for ad in soup_ads:
         title = ad.find(re.compile('^h\d$')).get_text()
@@ -54,7 +66,9 @@ def obter_modelos_e_precos(soup_results, soup_ads, model):
             storage_match = re.search(r'\d+GB', title)
             if storage_match:
                 storage_size = storage_match.group()
-                product = get_or_create_product(title, storage_size, get_brand(title))
+                product = Products(Model=title,
+                                   StorageGB=int(storage_size[:-2]),
+                                   Brand=get_brand(title))
                 price_element = ad.find("span", {"class": "T14wmb"})
                 supplier_div = ad.find("div", {"class": "sh-np__seller-container"})
                 supplier = supplier_div.get_text(strip=True) if supplier_div else None
@@ -63,8 +77,15 @@ def obter_modelos_e_precos(soup_results, soup_ads, model):
                     price = obter_preco(price_text)
                     if price is not None:
                         if not has_similar_product(title, model):
-                            create_priceTracker(title, price, product, model, supplier)
-
+                            unidade_priceTracker = PriceTracker(Model=title,
+                                                                DateOfSearch=timezone.now(),
+                                                                Price = price,
+                                                                SearchString=model,
+                                                                Product=product,
+                                                                Supplier=supplier)
+                            
+                            list_priceTracker.append(unidade_priceTracker)
+    return list_priceTracker
 
 def has_similar_product(title, model):
     similar_products = get_price_trackers_by_title(model)
