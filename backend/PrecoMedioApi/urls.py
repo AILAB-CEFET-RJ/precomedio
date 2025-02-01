@@ -17,8 +17,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, re_path
 from PrecoMedioApp.views import search, login, signup
+from PrecoMedioApp import views
 
 urlpatterns = [
+    path('buscaDiaria_alimentarConsolidada/', views.buscaDiaria_alimentarConsolidada, name='buscaDiaria_alimentarConsolidada'),
     path('admin/', admin.site.urls),
     path('search/<str:model>/<str:storage>/', search, name='search'),
     re_path('login', login),
