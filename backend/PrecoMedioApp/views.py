@@ -16,6 +16,33 @@ from rest_framework.permissions import IsAuthenticated
 
 from .serializers import PriceTrackerSerializer, UserSerializer
 
+from .models import Products, PriceTracker
+from django.http import HttpResponse
+
+def executar_funcao(request):
+    reset_and_query()
+    return HttpResponse("Função executada com sucesso!")
+
+@api_view(['GET'])
+def buscaDiaria_alimentarConsolidada(request):
+    # Passo 1: Apagar os dados nas tabelas Products e PriceTracker
+    Products_temp.objects.all().delete()
+    PriceTracker_temp.objects.all().delete()
+    # Passo 2: Realizar as consultas.
+    #search('iphone12', '256g')
+    #return HttpResponse("Função executada com sucesso!")
+    if request.method == 'GET':
+        #search_query = f"{model} {storage}"
+        search_query = f"iphone12 128g"
+        soup = fazer_pesquisa(search_query)
+        soup_ads, soup_results = extrair_resultados(soup)
+        obter_modelos_e_precos(soup_results, soup_ads, search_query)
+        products = get_price_trackers_by_title_and_storage(model,storage)
+        serialized_priceTrackers = PriceTrackerSerializer(products, many=True).data  
+
+        return JsonResponse(serialized_priceTrackers, safe=False, status=200)
+    else:
+        return JsonResponse({'message': 'Method not allowed'}, status=405)
 
 @csrf_exempt
 @api_view(['GET'])
