@@ -1,5 +1,6 @@
+from datetime import datetime, timedelta
 import re
-from .models import Products, PriceTracker
+from .models import Products, PriceTracker, Busca_consolidado
 from django.utils import timezone
 
 from .text_processing import get_brand
@@ -73,3 +74,20 @@ def get_average_price(products):
     average_price = round(sum(prices_without_outliers) / len(prices_without_outliers), 2)
     print(average_price)
     return average_price
+
+def create_buscaConsolidada(searchString, avgPrice, minPrice):
+    Busca_consolidado.objects.create(
+        SearchString=searchString,
+        AvgPrice=avgPrice,
+        MinPrice=minPrice,
+        DateOfSearch= datetime.now()
+    )
+    
+def getConsolidadoFromPriceTracker(searchString):
+    priceTrackers = PriceTracker.objects.filter(SearchString__icontains=searchString, DateOfSearch__gte=datetime.now().date())
+    if not priceTrackers:
+        return  None, None
+    
+    lowestPrice = min(priceTrackers, key=lambda p: p.Price).Price
+    averagePrice = sum(p.Price for p in priceTrackers) / len(priceTrackers)
+    return averagePrice, lowestPrice
