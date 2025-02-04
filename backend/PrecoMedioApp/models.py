@@ -6,6 +6,8 @@ class Products(models.Model):
     Model = models.CharField(max_length=100)  
     StorageGB = models.IntegerField()  
     Brand = models.CharField(max_length=100)  
+    class Meta:
+        db_table = "Products_temp"
 
 class PriceTracker(models.Model):
     Model = models.CharField(max_length=100) 
@@ -14,10 +16,15 @@ class PriceTracker(models.Model):
     SearchString = models.CharField(max_length=100)  
     Product = models.ForeignKey(Products, on_delete=models.CASCADE) 
     Supplier = models.CharField(max_length=100)
+    class Meta:
+        db_table = "PriceTracker_temp"
+
 
 class Busca_consolidado(models.Model):
     Consolidadoid = models.IntegerField(primary_key=True)
-    SearchString = models.ForeignKey(PriceTracker, on_delete=models.CASCADE)  
+    SearchString = models.CharField(max_length=100)
     AvgPrice = models.DecimalField(max_digits=10, decimal_places=2) 
     MinPrice = models.DecimalField(max_digits=10, decimal_places=2)
     DateOfSearch = models.DateTimeField()
+    class Meta:
+        db_table = "Busca_consolidado"

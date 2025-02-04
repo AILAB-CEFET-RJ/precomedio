@@ -17,7 +17,6 @@ def obter_preco(price_text):
     return decimal_price
 
 def detectar_outliers(products):
-    print('lalala',products)
     prices = [Decimal(product.Price) for product in products]
     if len(prices) > 1:
         average = sum(prices)/len(prices)
