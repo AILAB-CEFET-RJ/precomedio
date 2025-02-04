@@ -26,8 +26,8 @@ def executar_funcao(request):
 @api_view(['GET'])
 def buscaDiaria_alimentarConsolidada(request):
     # Passo 1: Apagar os dados nas tabelas Products e PriceTracker
-    Products_temp.objects.all().delete()
-    PriceTracker_temp.objects.all().delete()
+    #Products.objects.all().delete()
+    #PriceTracker.objects.all().delete()
     # Passo 2: Realizar as consultas.
     #search('iphone12', '256g')
     #return HttpResponse("Função executada com sucesso!")
@@ -36,10 +36,36 @@ def buscaDiaria_alimentarConsolidada(request):
         search_query = f"iphone12 128g"
         soup = fazer_pesquisa(search_query)
         soup_ads, soup_results = extrair_resultados(soup)
-        obter_modelos_e_precos(soup_results, soup_ads, search_query)
-        products = get_price_trackers_by_title_and_storage(model,storage)
-        serialized_priceTrackers = PriceTrackerSerializer(products, many=True).data  
+        products_with_filters = obter_modelos_e_precos(soup_results, soup_ads, search_query)
+        products = get_price_trackers_by_title_and_storage(products_with_filters)
+        filtered_products = detectar_outliers(products)
+        serialized_priceTrackers = PriceTrackerSerializer(filtered_products, many=True).data  
+        # Pegar média e menor valor
+        productlowestPrice = get_product_with_lowest_price(serialized_priceTrackers)
+        mean = get_average_price(serialized_priceTrackers)
 
+        """sql_query = 
+        INSERT INTO Busca_consolidado (Consolidadoid, SearchString, AveragePrice, MinPrice, )
+        SELECT
+        ROW_NUMBER() OVER () AS Consolidadoid,  -- Gera um ID único para cada grupo de resultados
+        SearchString,                          -- Agrupa pelo campo SearchString
+        AVG(Price) AS AveragePrice,            -- Calcula a média do campo Price
+        MIN(Price) AS MinPrice,                -- Calcula o valor mínimo do campo Price
+        CURDATE() - INTERVAL 1 DAY as DateOfSearch                 -- Conta quantos registros estão sendo agrupados
+        FROM
+        PriceTracker
+        WHERE
+        Date = CURDATE() - INTERVAL 1 DAY      -- Filtra pela data do dia anterior (1 dia atrás)
+        GROUP BY
+        SearchString
+
+        
+        
+        with connection.cursor() as cursor:
+            cursor.execute(sql_query)  # Executa a consulta SQL
+
+        print("Dados inseridos com sucesso!")
+"""
         return JsonResponse(serialized_priceTrackers, safe=False, status=200)
     else:
         return JsonResponse({'message': 'Method not allowed'}, status=405)
