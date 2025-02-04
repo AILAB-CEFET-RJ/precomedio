@@ -16,7 +16,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from .serializers import PriceTrackerSerializer, UserSerializer
 
-from .models import Products, PriceTracker
+from .models import Products, PriceTracker, Busca_consolidado
 from django.http import HttpResponse
 
 def executar_funcao(request):
