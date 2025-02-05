@@ -1,10 +1,10 @@
 import requests
 import re
+from datetime import datetime
 from bs4 import BeautifulSoup
 from .db_operations import create_priceTracker, get_or_create_product, save_product_and_price, get_price_trackers_by_title
 from .text_processing import obter_preco, similar, get_brand
 from .models import Products, PriceTracker
-from django.utils import timezone
 
 
 def fazer_pesquisa(pesquisa):
@@ -55,7 +55,7 @@ def obter_modelos_e_precos(soup_results, soup_ads, model):
                             if not has_similar_product(title, model):
                                 create_priceTracker(title, price, product, model, supplier)
                                 unidade_priceTracker = PriceTracker(Model=title,
-                                                                    DateOfSearch=timezone.now(),
+                                                                    DateOfSearch=datetime.now(),
                                                                     Price = price,
                                                                     SearchString=model,
                                                                     Product=product,
@@ -85,7 +85,7 @@ def obter_modelos_e_precos(soup_results, soup_ads, model):
                             if not has_similar_product(title, model):
                                 create_priceTracker(title, price, product, model, supplier)
                                 unidade_priceTracker = PriceTracker(Model=title,
-                                                                    DateOfSearch=timezone.now(),
+                                                                    DateOfSearch=datetime.now(),
                                                                     Price = price,
                                                                     SearchString=model,
                                                                     Product=product,

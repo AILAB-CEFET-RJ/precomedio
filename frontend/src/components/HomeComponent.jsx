@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { GetProducts } from "../requests/requestsProducts";
+import { GetProducts, SaveFavorites } from "../requests/requestsProducts";
 import Header from "./Header";
 import Footer from "./Footer";
 import { Pagination } from "./Pagination";
@@ -31,6 +31,23 @@ const HomeComponent = () => {
     setProductChosen(prods);
     setLoad(false);
   }
+
+  const handleFavorite = async () => {
+    setLoad(true);
+    try {
+      const userId = localStorage.getItem("userId");
+      const response = await SaveFavorites(productChosen, userId);
+      if (response) {
+        alert("Produtos salvos nos favoritos com sucesso!");
+      }
+    } catch (e) {
+      alert("Erro ao salvar nos favoritos");
+      console.error("Erro:", e);
+    }
+    setLoad(false);
+  }
+  
+
   const onSubmit = async (data1) => {
     setLoad(true);
 
@@ -126,7 +143,15 @@ const HomeComponent = () => {
                   </tbody>
                 </table>
                 {productChosen && <tr className="my-5">
-                  <td className="d-flex my-3 align-items-center justify-content-end"><button style={{backgroundColor: "#fcfd87", color: "#2f3f2e"}} className="btn btn-sm">Adicionar ao favorito</button></td>
+                  <td className="d-flex my-3 align-items-center justify-content-end">
+                    <button 
+                      style={{backgroundColor: "#fcfd87", color: "#2f3f2e"}}
+                      onClick={handleFavorite}  
+                      className="btn btn-sm"
+                      disabled={!productChosen || productChosen.length === 0}>
+                      Adicionar ao favorito
+                    </button>
+                  </td>
                 </tr>
                 }
               </div>

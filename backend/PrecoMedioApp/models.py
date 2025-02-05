@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 # Create your models here.
 class Products(models.Model):
@@ -28,3 +29,12 @@ class Busca_consolidado(models.Model):
     DateOfSearch = models.DateTimeField()
     class Meta:
         db_table = "Busca_consolidado"
+
+class Favorites(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    price_tracker = models.ForeignKey(PriceTracker, on_delete=models.CASCADE)
+    date_added = models.DateTimeField()
+
+    class Meta:
+        unique_together = ('user', 'price_tracker')
+        db_table = "Favorites"

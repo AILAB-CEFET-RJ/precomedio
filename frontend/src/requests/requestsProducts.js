@@ -25,3 +25,57 @@ export const GetProducts = async(params)=>{
     prods = await funcGetProducts();
     return prods
 }
+
+export const SaveFavorites = async (products, userId) => {
+  try {
+    if (!userId) {
+      throw new Error('UserId não encontrado');
+    }
+
+    const response = await fetch(basicUrl+'favorites/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      
+      body: JSON.stringify({ 
+        products: products,
+        userId: userId
+      })
+    });
+    
+    if (!response.ok) {
+      throw new Error('Erro ao salvar favoritos');
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Erro:', error);
+    throw error;
+  }
+}
+
+export const GetFavorites = async () => {
+  try {
+    const userId = localStorage.getItem("userId");
+    if (!userId) {
+      throw new Error('UserId não encontrado');
+    }
+
+    const response = await fetch(`${basicUrl}favorites/list/?userId=${userId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    });
+    
+    if (!response.ok) {
+      throw new Error('Erro ao buscar favoritos');
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Erro:', error);
+    throw error;
+  }
+}

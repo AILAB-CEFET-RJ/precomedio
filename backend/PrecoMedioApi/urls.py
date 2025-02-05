@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, re_path
-from PrecoMedioApp.views import search, login, signup
+from PrecoMedioApp.views import search, login, signup, save_favorites, get_favorites
 from PrecoMedioApp import views
 
 urlpatterns = [
@@ -25,4 +25,6 @@ urlpatterns = [
     path('search/<str:model>/<str:storage>/', search, name='search'),
     re_path('login', login),
     re_path('signup', signup),
+    path('favorites/', views.save_favorites, name='save_favorites'),
+    path('favorites/list/', views.get_favorites, name='get_favorites'),
 ]

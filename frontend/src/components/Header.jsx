@@ -8,12 +8,14 @@ const Header = () => {
   
   return (<>
     <header className="bg-white shadow">
-      <img id="logo"  src="images/preco_medio_logo.png" alt="Logo Preço Médio" />
+      <Link to="/">
+        <img id="logo"  src="images/preco_medio_logo.png" alt="Logo Preço Médio" />
+      </Link>
       
       <nav className="bg-white" id="itens-navegacao">
         <div className="container mx-auto flex justify-between items-center bg-white">
           <div className="bg-white" >
-            <Link to={"/historicoProduto"} >Favorito</Link>
+            <Link to={"/favoritos"} >Favorito</Link>
 
             <Link to={"/"} onClick={() => {
               setAuth(false);
