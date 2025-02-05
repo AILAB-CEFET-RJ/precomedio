@@ -134,6 +134,7 @@ article>#table-home {
   min-width: 100vw;
   background-image: url("../public/images/preco_medio2.jpg");
   background-size: 100% 100%;
+  background-color: transparent;
   background-repeat: no-repeat;
   justify-content: center;
   align-items: center;
@@ -164,6 +165,8 @@ article>#table-home {
   background-color: transparent;
 
 }
+
+
 
 #alterar_login h5,
 #alterar_login h6,
@@ -196,7 +199,6 @@ article>#table-home {
   text-decoration: none;
   border: 1px solid red;
   padding: 3px;
-  background-color: red;
   font-size: 15px;
   border-radius: 2px;
   padding: 6px;
@@ -255,16 +257,16 @@ article>#table-home {
 }
 
 #icone_usuario {
-  height: 270px;
-  width: 380px;
-  opacity: 0.71;
+  height: 16rem;
+  width: 16rem;
+  padding: 2rem;
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
 }
 .imageIconeLoad{
   position: fixed;
-  width:250px;
-  height:250px;
+  width:36rem;
+  height:28rem;
   top:50%;
   left:50%;
   transform: translate(-50%,-50%);
@@ -321,4 +323,11 @@ article>#table-home {
 #btn-fav:hover{
   background-color: "#ffdf00";
   transition: 0.5s; 
+}
+
+
+
+#secao_login * {
+  background-color: transparent;
+
 }

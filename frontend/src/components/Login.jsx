@@ -18,18 +18,18 @@ const Login = () => {
     const onSubmit = async (data1) => {
         setLoad(true);
         try {
-
-            let { token } = await PostUsersLogin(data1.user, data1.password);
-            if (token !== undefined) {
-                setAuth(localStorage.setItem("authToken", token))
+            let response = await PostUsersLogin(data1.user, data1.password);
+            if (response && response.token) {
+                localStorage.setItem("authToken", response.token);
+                localStorage.setItem("userId", response.userId);
+                setAuth(true);
+                nav("/");
             } else {
-                setErroForm("Erro no usuario ou senha");
+                setErroForm(true);
             }
-            nav("/");
         } catch (e) {
             alert("Erro no servidor");
-            console.log("Erro no servidor");
-          }
+        }
         setLoad(false);
     }
     return (
@@ -37,10 +37,10 @@ const Login = () => {
             {load ? <div><img src={"images/loading.gif"} className="imageIconeLoad" /></div> :
                 <section id="secao_login">
 
-                    <img src="../images/iconeUsuario.avif" id="icone_usuario" alt="icone login" />
-                    <h3 className="my-1">Login</h3>
+                    <img src="../images/user.png" id="icone_usuario" alt="icone login" />
+                    <h3 className="mt-3">Login</h3>
                     <h6 style={{ color: "orange" }}>{errorForm && messageErrorForm}</h6>
-                    <form className="my-3" >
+                    <form className="my-1" >
                         <label htmlFor="user">
                             <input type="text" {...register("user")} name="user" id="user" placeholder="Nome do usuário" />
                         </label>
@@ -50,12 +50,12 @@ const Login = () => {
                         </label>
                         <div style={{ color: "orange" }}>{errors.password?.message}</div>
                         <label className="my-3" id="enviar_dados_login">
-                            <button id="enviar_login" onClick={handleSubmit(onSubmit)}>Enviar</button>
+                            <button id="enviar_login" style={{backgroundColor: "#86a782"}} onClick={handleSubmit(onSubmit)}>Enviar</button>
                         </label>
                     </form>
                     <div className="my-3" id="alterar_login">
-                        <h5><Link to="/redefinirSenha" className="text-light h5" >redefinir senha</Link></h5>
-                        <h6><Link to="/CadastrarUsuario" className="text-light h6">cadastrar</Link> </h6>
+                        <h5><Link to="/redefinirSenha" className="text-light h5" >Redefinir senha</Link></h5>
+                        <h5><Link to="/CadastrarUsuario" className="text-light h5">Cadastrar</Link> </h5>
                     </div>
                 </section>}
         </div>

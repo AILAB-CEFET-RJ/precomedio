@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 import re
-from .models import Products, PriceTracker, Busca_consolidado
-from django.utils import timezone
+from .models import Products, PriceTracker, Busca_consolidado, Favorites
+
 
 from .text_processing import get_brand
 import statistics
@@ -30,7 +30,7 @@ def get_or_create_product(title, storage, brand):
 def create_priceTracker(title, price, product,model, supplier):
     PriceTracker.objects.create(
         Model=title,
-        DateOfSearch= timezone.now(),  
+        DateOfSearch= datetime.now(),  
         Price=price,
         SearchString=model,  
         Product=product,
@@ -59,7 +59,6 @@ def get_product_with_lowest_price(products):
         return {'lowestPrice': None, 'productName': None}  # Retorna None se não houver produtos válidos
     
     product_with_lowest_price = min(products, key=lambda p: float(p['Price']))
-    print(product_with_lowest_price['Price'])
     return {
         'lowestPrice': product_with_lowest_price['Price'],
         'productName': product_with_lowest_price['SearchString']
@@ -72,7 +71,6 @@ def get_average_price(products):
 
     prices_without_outliers = [float(product['Price']) for product in products]
     average_price = round(sum(prices_without_outliers) / len(prices_without_outliers), 2)
-    print(average_price)
     return average_price
 
 def create_buscaConsolidada(searchString, avgPrice, minPrice):
@@ -91,3 +89,31 @@ def getConsolidadoFromPriceTracker(searchString):
     lowestPrice = min(priceTrackers, key=lambda p: p.Price).Price
     averagePrice = sum(p.Price for p in priceTrackers) / len(priceTrackers)
     return averagePrice, lowestPrice
+
+def save_favorite(user, price_tracker_id):
+    try:
+        price_tracker = PriceTracker.objects.get(id=price_tracker_id)
+        favorite, created = Favorites.objects.get_or_create(
+            user=user,
+            price_tracker=price_tracker,
+            defaults={'date_added': datetime.now()}
+        )
+        return favorite if created else None
+    except Exception as e:
+        print(f"Erro ao salvar favorito: {str(e)}")
+        return None
+
+def get_user_favorites(user):
+    favorites = (Favorites.objects
+                .filter(user=user)
+                .select_related('price_tracker')
+                .order_by('price_tracker__Model', 'price_tracker__Price', '-date_added'))
+    
+    # Dicionário para manter apenas um registro por Model/Price
+    unique_favorites = {}
+    for favorite in favorites:
+        key = (favorite.price_tracker.Model, favorite.price_tracker.Price)
+        if key not in unique_favorites:
+            unique_favorites[key] = favorite
+    
+    return list(unique_favorites.values())

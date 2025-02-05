@@ -1,26 +1,26 @@
 const basicUrl = "http://127.0.0.1:8000/"
 export const PostUsersLogin = async (username, password) => {
-    let token = false;
-    const url1 = basicUrl + "login";
-    const funcPostUsersLogin = async () => {
-        const login1 = {
-            username,
-            password
-        }
-        token = await fetch(url1, {
-            method: "POST",
+    try {
+        const response = await fetch(basicUrl + 'login', {
+            method: 'POST',
             headers: {
-                "Content-Type": "application/json"
+                'Content-Type': 'application/json',
             },
-            body: JSON.stringify(login1),
+            body: JSON.stringify({
+                user: username,
+                password: password
+            })
+        });
 
-        }).then(response => response.json())
-            .then(data => data)
-            .catch(error => error)
-        return token
+        if (!response.ok) {
+            throw new Error('Login failed');
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
     }
-    token = await funcPostUsersLogin();
-    return token
 }
 export const PostUsers = async (username, password, email) => {
     let token = false;
