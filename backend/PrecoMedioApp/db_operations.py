@@ -1,0 +1,119 @@
+from datetime import datetime, timedelta
+import re
+from .models import Products, PriceTracker, Busca_consolidado, Favorites
+
+
+from .text_processing import get_brand
+import statistics
+
+def save_product_and_price(products_list, searchString):
+    for storage_size, data in products_list.items():
+        for i in range(len(data["modelos"])):
+            modelo = data["modelos"][i]
+            preco = data["precos"][i]
+            vendedor = data["vendedores"][i]
+
+            product = get_or_create_product(modelo,storage_size,get_brand(modelo))
+            price_tracker = create_priceTracker(modelo,preco,product,searchString,vendedor)
+
+def get_all_price_trackers():
+    return PriceTracker.objects.all()
+
+def get_or_create_product(title, storage, brand):
+    product, _ = Products.objects.get_or_create(
+        Model=title,
+        StorageGB=int(storage[:-2]),  
+        Brand=brand
+    )
+    return product
+
+def create_priceTracker(title, price, product,model, supplier):
+    PriceTracker.objects.create(
+        Model=title,
+        DateOfSearch= datetime.now(),  
+        Price=price,
+        SearchString=model,  
+        Product=product,
+        Supplier = supplier
+    )
+
+def get_price_trackers_by_title(model, storage=None):
+  if storage:
+    search_string = f"{model} {storage}"
+    products = PriceTracker.objects.filter(SearchString__icontains=search_string)
+  else:
+    products = PriceTracker.objects.filter(SearchString__icontains=model)
+  return products
+
+def get_price_trackers_by_title_and_storage(products):
+    unique_products = {}
+    for product in products:
+        
+        key = (product.Model, product.Price)  
+        if key not in unique_products:
+            unique_products[key] = product  
+    return list(unique_products.values())  # retorna uma lista de produtos unicos, tentei distinct mas nao é suportado
+    
+def get_product_with_lowest_price(products):
+    if not products:
+        return {'lowestPrice': None, 'productName': None}  # Retorna None se não houver produtos válidos
+    
+    product_with_lowest_price = min(products, key=lambda p: float(p['Price']))
+    return {
+        'lowestPrice': product_with_lowest_price['Price'],
+        'productName': product_with_lowest_price['SearchString']
+    }
+    
+def get_average_price(products):
+
+    if not products:
+        return None
+
+    prices_without_outliers = [float(product['Price']) for product in products]
+    average_price = round(sum(prices_without_outliers) / len(prices_without_outliers), 2)
+    return average_price
+
+def create_buscaConsolidada(searchString, avgPrice, minPrice):
+    Busca_consolidado.objects.create(
+        SearchString=searchString,
+        AvgPrice=avgPrice,
+        MinPrice=minPrice,
+        DateOfSearch= datetime.now()
+    )
+    
+def getConsolidadoFromPriceTracker(searchString):
+    priceTrackers = PriceTracker.objects.filter(SearchString__icontains=searchString, DateOfSearch__gte=datetime.now().date())
+    if not priceTrackers:
+        return  None, None
+    
+    lowestPrice = min(priceTrackers, key=lambda p: p.Price).Price
+    averagePrice = sum(p.Price for p in priceTrackers) / len(priceTrackers)
+    return averagePrice, lowestPrice
+
+def save_favorite(user, price_tracker_id):
+    try:
+        price_tracker = PriceTracker.objects.get(id=price_tracker_id)
+        favorite, created = Favorites.objects.get_or_create(
+            user=user,
+            price_tracker=price_tracker,
+            defaults={'date_added': datetime.now()}
+        )
+        return favorite if created else None
+    except Exception as e:
+        print(f"Erro ao salvar favorito: {str(e)}")
+        return None
+
+def get_user_favorites(user):
+    favorites = (Favorites.objects
+                .filter(user=user)
+                .select_related('price_tracker')
+                .order_by('price_tracker__Model', 'price_tracker__Price', '-date_added'))
+    
+    # Dicionário para manter apenas um registro por Model/Price
+    unique_favorites = {}
+    for favorite in favorites:
+        key = (favorite.price_tracker.Model, favorite.price_tracker.Price)
+        if key not in unique_favorites:
+            unique_favorites[key] = favorite
+    
+    return list(unique_favorites.values())
