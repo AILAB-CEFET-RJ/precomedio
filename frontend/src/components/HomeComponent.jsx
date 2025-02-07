@@ -37,9 +37,6 @@ const HomeComponent = () => {
     try {
       const userId = localStorage.getItem("userId");
       const response = await SaveFavorites(productChosen, userId);
-      if (response) {
-        alert("Produtos salvos nos favoritos com sucesso!");
-      }
     } catch (e) {
       alert("Erro ao salvar nos favoritos");
       console.error("Erro:", e);
