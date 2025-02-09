@@ -1,0 +1,8 @@
+ede0d1 - fundo
+2f3f2e - verde escuro 
+86a782 - verde médio
+b3ceb3 - verde claro 
+331c2c - titulo h1
+#7d0000 - vermelho escuro
+#9d3939 - vermelho claro
+#ffdf00 - amarelo
