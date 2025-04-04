@@ -29,7 +29,7 @@ const FavoritesComponent = () => {
         <Header />
         {load ? (
           <div>
-            <img src={"images/loading.gif"} className="imageIconeLoad" />
+            <img src={"images/loading.gif"} className="imageIconeLoad" alt="Loading" />
           </div>
         ) : (
           <section className="pt-5">

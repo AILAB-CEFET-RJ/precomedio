@@ -1,7 +1,7 @@
 import HomeComponent from "../components/HomeComponent";
-import HistoryProduct from "../components/HistoryProduct";
+// import HistoryProduct from "../components/HistoryProduct";
 import { Route, Routes, BrowserRouter, Navigate } from "react-router-dom";
-import Page from "../components/Page";
+// import Page from "../components/Page";
 import FavoritesComponent from "../components/FavoritesComponent";
 
 const PrivateRouteNav = () => {

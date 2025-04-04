@@ -36,7 +36,7 @@ const HomeComponent = () => {
     setLoad(true);
     try {
       const userId = localStorage.getItem("userId");
-      const response = await SaveFavorites(productChosen, userId);
+      await SaveFavorites(productChosen, userId);
     } catch (e) {
       alert("Erro ao salvar nos favoritos");
       console.error("Erro:", e);
@@ -68,8 +68,8 @@ const HomeComponent = () => {
   return (
     <>
       <div id="container-fluid container2">
-        <Header/>
-        {load ? <div><img src={"images/loading.gif"} className="imageIconeLoad" /></div> :
+        <Header />
+        {load ? <div><img src={"images/loading.gif"} className="imageIconeLoad" alt="Loading" /></div> :
           <section className="pt-5">
             <article>
               <form className="row gy-2 gx-3  align-items-center">
@@ -135,21 +135,27 @@ const HomeComponent = () => {
                         <td>{prod.Supplier}</td>
                         <td> {prod.SearchString.split(" ")[1]}</td>
                         <td>{prod.DateOfSearch.split(/((\d){2,4}-(\d){2,2}-(\d){2,2})/)[1]}</td>
-                      </tr>)) : <h5 style={{color: "#7d0000"}} className="h6">Nenhum dado carregado</h5>
-                    }
+                      </tr>
+                    )) : (
+                      <tr>
+                        <td colSpan="6" style={{ color: "#7d0000" }} className="h6 text-center ">
+                          Nenhum dado carregado
+                        </td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
-                {productChosen && <tr className="my-5">
-                  <td className="d-flex my-3 align-items-center justify-content-end">
+                {productChosen && <div className="my-5">
+                  <div className="d-flex align-items-center justify-content-end">
                     <button 
-                      style={{backgroundColor: "#fcfd87", color: "#2f3f2e"}}
+                      style={{ backgroundColor: "#fcfd87", color: "#2f3f2e" }}
                       onClick={handleFavorite}  
                       className="btn btn-sm"
                       disabled={!productChosen || productChosen.length === 0}>
                       Adicionar ao favorito
                     </button>
-                  </td>
-                </tr>
+                  </div>
+                </div>
                 }
               </div>
             </article>

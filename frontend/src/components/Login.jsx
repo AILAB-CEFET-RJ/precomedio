@@ -34,7 +34,7 @@ const Login = () => {
     }
     return (
         <div id="container_login">
-            {load ? <div><img src={"images/loading.gif"} className="imageIconeLoad" /></div> :
+            {load ? <div><img src={"images/loading.gif"} className="imageIconeLoad" alt="loading" /></div> :
                 <section id="secao_login">
 
                     <img src="../images/user.png" id="icone_usuario" alt="icone login" />
