@@ -15,6 +15,7 @@ const Header = () => {
       <nav className="bg-white" id="itens-navegacao">
         <div className="container mx-auto flex justify-between items-center bg-white">
           <div className="bg-white" >
+            <Link to={"/historico"} >Histórico</Link>
             <Link to={"/favoritos"} >Favorito</Link>
 
             <Link to={"/"} onClick={() => {
