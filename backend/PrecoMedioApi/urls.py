@@ -16,15 +16,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, re_path
-from PrecoMedioApp.views import search, login, signup, save_favorites, get_favorites
-from PrecoMedioApp import views
+from PrecoMedioApp.views import search, login, signup, save_favorites, get_favorites, buscaDiaria_alimentarConsolidada, get_prices_history 
 
 urlpatterns = [
-    path('buscaDiaria_alimentarConsolidada/', views.buscaDiaria_alimentarConsolidada, name='buscaDiaria_alimentarConsolidada'),
+    path('buscaDiaria_alimentarConsolidada/', buscaDiaria_alimentarConsolidada, name='buscaDiaria_alimentarConsolidada'),
     path('admin/', admin.site.urls),
     path('search/<str:model>/<str:storage>/', search, name='search'),
     re_path('login', login),
     re_path('signup', signup),
-    path('favorites/', views.save_favorites, name='save_favorites'),
-    path('favorites/list/', views.get_favorites, name='get_favorites'),
+    path('favorites/', save_favorites, name='save_favorites'),
+    path('favorites/list/', get_favorites, name='get_favorites'),
+    path('history/', get_prices_history, name='get_prices_history'),
 ]

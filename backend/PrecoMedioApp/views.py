@@ -13,7 +13,7 @@ from .utils import extrair_resultados, fazer_pesquisa, obter_modelos_e_precos
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from rest_framework.decorators import authentication_classes, permission_classes
 from rest_framework.permissions import IsAuthenticated
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from .serializers import PriceTrackerSerializer, UserSerializer, FavoriteSerializer
 
@@ -175,3 +175,22 @@ def get_favorites(request):
             {'error': str(e)}, 
             status=status.HTTP_400_BAD_REQUEST
         )
+
+@api_view(['GET'])
+def get_prices_history(request):
+    try:
+        search_query = request.GET.get('searchString')
+        search_query = search_query.replace('"', '').replace("'", '')
+
+        thirty_days_ago = datetime.now() - timedelta(days=30)
+
+        priceTrackers = PriceTracker.objects.filter(
+            SearchString__icontains=search_query,
+            DateOfSearch__gte=thirty_days_ago
+        ).order_by('-DateOfSearch')
+
+        serializer = PriceTrackerSerializer(priceTrackers, many=True)
+        return Response(serializer.data)
+    except Exception as e:
+        print("Error:", str(e))
+        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
