@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, re_path
-from PrecoMedioApp.views import search, login, signup, save_favorites, get_favorites, buscaDiaria_alimentarConsolidada, get_prices_history 
+from PrecoMedioApp.views import search, login, signup, save_favorites, get_favorites, buscaDiaria_alimentarConsolidada, get_prices_history, list_min_price_per_product
 
 urlpatterns = [
     path('buscaDiaria_alimentarConsolidada/', buscaDiaria_alimentarConsolidada, name='buscaDiaria_alimentarConsolidada'),
@@ -27,4 +27,5 @@ urlpatterns = [
     path('favorites/', save_favorites, name='save_favorites'),
     path('favorites/list/', get_favorites, name='get_favorites'),
     path('history/', get_prices_history, name='get_prices_history'),
+    path('min_prices/', list_min_price_per_product, name='list_min_price_per_product'),
 ]

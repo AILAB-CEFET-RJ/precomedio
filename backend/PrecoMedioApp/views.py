@@ -14,11 +14,27 @@ from rest_framework.authentication import SessionAuthentication, TokenAuthentica
 from rest_framework.decorators import authentication_classes, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from datetime import datetime, timedelta
-
+from django.db.models import Min
 from .serializers import PriceTrackerSerializer, UserSerializer, FavoriteSerializer
 
 from .models import Products, PriceTracker, Busca_consolidado, Favorites
 from django.http import HttpResponse
+
+@api_view(['GET'])
+def list_min_price_per_product(request):
+    queryset = PriceTracker.objects.values('SearchString') \
+                                   .annotate(MinPrice=Min('Price')) \
+                                   .order_by('SearchString')
+
+    result = list(queryset)
+
+    if not result:
+        return Response(
+            {"detail": "Nenhum preço encontrado."},
+            status=status.HTTP_404_NOT_FOUND
+        )
+
+    return Response(result, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
 def buscaDiaria_alimentarConsolidada(request):
