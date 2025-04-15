@@ -43,9 +43,8 @@ const HistoryProduct = () => {
                 <table className="table table-striped">
                   <thead className="thead-dark">
                     <tr>
-                      <th className="align-middle" scope="col">Modelo</th>
-                      <th className="align-middle" scope="col">Menor Preço</th>
-                      
+                      <th id="item-header-table" className="align-middle" scope="col">Modelo</th>
+                      <th id="item-header-table" className="align-middle" scope="col">Menor Preço</th>
                     </tr>
                   </thead>
                   <tbody>
