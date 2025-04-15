@@ -14,7 +14,7 @@ from rest_framework.authentication import SessionAuthentication, TokenAuthentica
 from rest_framework.decorators import authentication_classes, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from datetime import datetime, timedelta
-from django.db.models import Min
+from django.db.models import Min, Avg
 from .serializers import PriceTrackerSerializer, UserSerializer, FavoriteSerializer
 
 from .models import Products, PriceTracker, Busca_consolidado, Favorites
@@ -22,8 +22,8 @@ from django.http import HttpResponse
 
 @api_view(['GET'])
 def list_min_price_per_product(request):
-    queryset = PriceTracker.objects.values('SearchString') \
-                                   .annotate(MinPrice=Min('Price')) \
+    queryset = Busca_consolidado.objects.values('SearchString') \
+                                   .annotate(MinPrice=Min('MinPrice')) \
                                    .order_by('SearchString')
 
     result = list(queryset)
@@ -193,20 +193,27 @@ def get_favorites(request):
         )
 
 @api_view(['GET'])
-def get_prices_history(request):
+def get_mean_prices_last_30_days(request):
     try:
-        search_query = request.GET.get('searchString')
-        search_query = search_query.replace('"', '').replace("'", '')
+        thirty_days_ago = datetime.now().date() - timedelta(days=30)
 
-        thirty_days_ago = datetime.now() - timedelta(days=30)
-
-        priceTrackers = PriceTracker.objects.filter(
-            SearchString__icontains=search_query,
+        queryset = Busca_consolidado.objects.filter(
             DateOfSearch__gte=thirty_days_ago
-        ).order_by('-DateOfSearch')
+        ).values(
+            'SearchString'
+        ).annotate(
+            MeanPriceLast30Days=Avg('AvgPrice') 
+        ).order_by(
+            'SearchString'  
+        )
 
-        serializer = PriceTrackerSerializer(priceTrackers, many=True)
-        return Response(serializer.data)
+        result = list(queryset)
+
+        return Response(result, status=status.HTTP_200_OK)
+
     except Exception as e:
-        print("Error:", str(e))
-        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        print("Erro:", str(e))
+        return Response(
+            {'error': str(e)}, 
+            status=status.HTTP_400_BAD_REQUEST
+        )
