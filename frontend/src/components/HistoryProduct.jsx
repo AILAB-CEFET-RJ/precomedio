@@ -1,82 +1,80 @@
-import { useState } from "react";
-import { GetProducts } from "../requests/requestsProducts";
+import { useEffect, useState } from "react";
+import { GetLowerPriceHistory } from "../requests/requestsLowerPriceHistory";
 import Header from "./Header";
-import { Pagination } from "./Pagination";
-const HistoryProduct = () => {
-  const [historicoEscolhido, setProdutoEscolhido] = useState([]);
-  const [setParametros_Estatisticos] = useState([]);
-  const [numpages, setNumPages] = useState([]);
-  const [setLoad] = useState(false);
-  let num = 0;
-  let listNum = []
-  const fetchGetProdutos = async (e) => {
-    e.preventDefault();
-    setLoad(true);
-    let { data, dadosEstatisticos } = await GetProducts();
-    setParametros_Estatisticos(dadosEstatisticos);
-    [data, listNum] = Pagination(data, num, e.target.name)
-    setNumPages([...listNum]);
-    setProdutoEscolhido(data);
-    setLoad(false);
-  }
-  return (
-    <div id="container-fluid container2">
-      <Header mainTitle="Favorito" title="Home" path="/home" />
-      <article id="table-home">
-        <div className="table-responsive">
-          <table className="table table-striped ">
-            <thead className="thead-dark">
-              <tr>
-                <th className="align-middle text-success" scope="col">Modelo</th>
-                <th className="align-middle text-success" scope="col">Preço</th>
-                <th className="align-middle text-success" scope="col">Fornecedor</th>
-                <th className="align-middle text-success" scope="col">Marca</th>
-                <th className="align-middle text-success" scope="col">Armazenamento GB</th>
-                <th className="align-middle text-success" scope="col">Data</th>
-              </tr>
-            </thead>
-            <tbody>
-              {historicoEscolhido.length > 0  && historicoEscolhido  ? historicoEscolhido.map((prod, ids) => (
-                <tr key={ids}>
-                  <th hidden="hidden" className="align-middle idProduto">{prod.ProductId}</th>
-                  <td>{prod.Model}</td>
-                  <td>R$ {prod.Price}</td>
-                  <td>{prod.Supplier}</td>
-                  <td>{prod.Brand}</td>
-                  <td> {prod.StorageGB}</td>
-                  <td>{prod.DateOfSearch}</td>
-                  <td id="img-lixeira"  >
-                    <img title="editar produto" id={prod.id} className="mx-3 btn-editar-produto" src="images/editar.jpg" alt="editar" />
-                    <img title="excluir produto" id={prod.id} className="deletarProduto deletProduto" src="images/lixeira.jpg" alt="excluir" />
+import Footer from "./Footer";
 
-                  </td>
-                </tr>)) : <p style={{ color: "#7d0000" }} className="h6">Nenhum dado carregado</p>
-              }</tbody>
-          </table>
-        </div>
-      </article>
-      {numpages.length > 1 &&
-        <nav aria-label="Navegação de página exemplo">
-          <ul className="pagination justify-content-center">
-            <li className="page-item">
-              <button className="page-link" href="#" name={0} onClick={(e) => {
-                fetchGetProdutos(e)
-              }} >Primeiro</button>
-            </li>
-            {numpages.map((nps) => (
-              <li className="page-item" key={nps}><button name={nps} onClick={(e) => {
-                fetchGetProdutos(e)
-              }}
-                className="page-link" href="#">{nps + 1}</button></li>
-            ))}
-            <li className="page-item">
-              <button className="page-link" href="#" name={numpages.length - 1} onClick={(e) => {
-                fetchGetProdutos(e)
-              }}>Último</button>
-            </li>
-          </ul>
-        </nav>}
-    </div>
-  )
-}
+// Vai funcionar como uma dashboard com várias tabelas e gráficos.
+const HistoryProduct = () => {
+  const [lowerPriceHistory, setLowerPriceHistory] = useState([]);
+  const [load, setLoad] = useState(false);
+
+  useEffect(() => {
+    loadLowerPriceHistory();
+  }, []);
+
+  const loadLowerPriceHistory = async () => {
+    setLoad(true);
+    try {
+      const response = await GetLowerPriceHistory();
+      console.log(response)
+      setLowerPriceHistory(response || []);
+    } catch (e) {
+      alert("Erro ao carregar histórico");
+      console.error("Erro:", e);
+    }
+    setLoad(false);
+  };
+
+  return (
+    <>
+      <div id="container-fluid container2">
+        <Header />
+        {load ? (
+          <div>
+            <img src={"images/loading.gif"} className="imageIconeLoad" alt="Loading" />
+          </div>
+        ) : (
+          <section className="pt-5">
+            <article>
+              <div className="container" style={{ width: "100%", margin: "0 auto" }}>
+                <div className="text-center mb-3">
+                  <h2 className="text-success">Menor Preço Histórico Por Modelo</h2>
+                </div>
+                <table className="table table-striped">
+                  <thead className="thead-dark">
+                    <tr>
+                      <th className="align-middle" scope="col">Modelo</th>
+                      <th className="align-middle" scope="col">Menor Preço</th>
+                      
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {lowerPriceHistory.length > 0 ? (
+                      lowerPriceHistory.map((item, i) => (
+                        <tr key={i}>
+                          <td>{item.SearchString}</td>
+                          <td>R$ {Number(item.MinPrice).toFixed(2).replace(".", ",")}</td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="4">
+                          <h5 style={{ color: "#7d0000" }} className="h6 text-center">
+                            Nenhum histórico encontrado
+                          </h5>
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </article>
+          </section>
+        )}
+        {!load && <Footer />}
+      </div>
+    </>
+  );
+};
+
 export default HistoryProduct;
