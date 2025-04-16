@@ -1,23 +1,42 @@
 import { useEffect, useState } from "react";
 import { GetLowerPriceHistory } from "../requests/requestsLowerPriceHistory";
+import { GetThirtyDaysAverage } from "../requests/requestsThirtyDaysAverage";
 import Header from "./Header";
 import Footer from "./Footer";
-
 // Vai funcionar como uma dashboard com várias tabelas e gráficos.
 const HistoryProduct = () => {
   const [lowerPriceHistory, setLowerPriceHistory] = useState([]);
+  const [averagePrices, setAveragePrices] = useState({});
   const [load, setLoad] = useState(false);
 
   useEffect(() => {
-    loadLowerPriceHistory();
+    loadPriceHistory();
   }, []);
 
-  const loadLowerPriceHistory = async () => {
+  const loadPriceHistory = async () => {
     setLoad(true);
     try {
       const response = await GetLowerPriceHistory();
-      console.log(response)
-      setLowerPriceHistory(response || []);
+      if (response && Array.isArray(response)) {
+        const lowerPrices = response;
+        setLowerPriceHistory(lowerPrices);
+
+        const averages = await Promise.all(
+          lowerPrices.map(async (item) => {
+            const avg = await GetThirtyDaysAverage(item.SearchString);
+            return { searchString: item.SearchString, avgPrice: avg };
+          })
+        );
+
+        const averagePriceMap = {};
+        averages.forEach((entry) => {
+          averagePriceMap[entry.searchString] = entry.avgPrice;
+        });
+
+        setAveragePrices(averagePriceMap);
+      } else {
+        setLowerPriceHistory([]);
+      }
     } catch (e) {
       alert("Erro ao carregar histórico");
       console.error("Erro:", e);
@@ -38,13 +57,14 @@ const HistoryProduct = () => {
             <article>
               <div className="container" style={{ width: "100%", margin: "0 auto" }}>
                 <div className="text-center mb-3">
-                  <h2 className="text-success">Menor Preço Histórico Por Modelo</h2>
+                  <h2 className="text-success">Histórico de Preços Por Modelo</h2>
                 </div>
                 <table className="table table-striped">
                   <thead className="thead-dark">
                     <tr>
-                      <th id="item-header-table" className="align-middle" scope="col">Modelo</th>
-                      <th id="item-header-table" className="align-middle" scope="col">Menor Preço</th>
+                      <th className="align-middle" scope="col">Modelo</th>
+                      <th className="align-middle" scope="col">Menor Preço</th>
+                      <th className="align-middle" scope="col">Preço Médio (30 dias)</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -53,6 +73,11 @@ const HistoryProduct = () => {
                         <tr key={i}>
                           <td>{item.SearchString}</td>
                           <td>R$ {Number(item.MinPrice).toFixed(2).replace(".", ",")}</td>
+                          <td>
+                            {averagePrices[item.SearchString] !== null && averagePrices[item.SearchString] !== undefined
+                              ? `R$ ${Number(averagePrices[item.SearchString]).toFixed(2).replace(".", ",")}`
+                              : "N/A"}
+                          </td>
                         </tr>
                       ))
                     ) : (

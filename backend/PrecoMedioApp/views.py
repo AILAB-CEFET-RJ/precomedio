@@ -193,7 +193,7 @@ def get_favorites(request):
         )
 
 @api_view(['GET'])
-def get_prices_history(request):
+def get_prices_monthly_history(request):
     try:
         search_query = request.GET.get('searchString')
         search_query = search_query.replace('"', '').replace("'", '')
@@ -203,10 +203,14 @@ def get_prices_history(request):
         priceTrackers = PriceTracker.objects.filter(
             SearchString__icontains=search_query,
             DateOfSearch__gte=thirty_days_ago
-        ).order_by('-DateOfSearch')
+        )
 
-        serializer = PriceTrackerSerializer(priceTrackers, many=True)
-        return Response(serializer.data)
+        if not priceTrackers.exists():
+            return Response({"average_price_30_days": None}, status=200)
+
+        avg_price = sum(p.Price for p in priceTrackers) / len(priceTrackers)
+        return Response({"average_price_30_days": round(avg_price, 2)}, status=200)
+
     except Exception as e:
         print("Error:", str(e))
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
