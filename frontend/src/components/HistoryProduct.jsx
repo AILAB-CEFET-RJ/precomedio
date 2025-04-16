@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { GetLowerPriceHistory } from "../requests/requestsLowerPriceHistory";
-import { GetThirtyDaysAverage } from "../requests/requestsThirtyDaysAverage";
+import { GetAllMeanPricesLast30Days } from "../requests/requestsThirtyDaysAverage"
 import Header from "./Header";
 import Footer from "./Footer";
 // Vai funcionar como uma dashboard com várias tabelas e gráficos.
@@ -17,22 +17,16 @@ const HistoryProduct = () => {
     setLoad(true);
     try {
       const response = await GetLowerPriceHistory();
+      const allMeanPrices = await GetAllMeanPricesLast30Days();
+  
       if (response && Array.isArray(response)) {
         const lowerPrices = response;
         setLowerPriceHistory(lowerPrices);
-
-        const averages = await Promise.all(
-          lowerPrices.map(async (item) => {
-            const avg = await GetThirtyDaysAverage(item.SearchString);
-            return { searchString: item.SearchString, avgPrice: avg };
-          })
-        );
-
         const averagePriceMap = {};
-        averages.forEach((entry) => {
-          averagePriceMap[entry.searchString] = entry.avgPrice;
+        allMeanPrices.forEach((item) => {
+          averagePriceMap[item.SearchString] = item.MeanPriceLast30Days;
         });
-
+  
         setAveragePrices(averagePriceMap);
       } else {
         setLowerPriceHistory([]);
@@ -73,11 +67,7 @@ const HistoryProduct = () => {
                         <tr key={i}>
                           <td>{item.SearchString}</td>
                           <td>R$ {Number(item.MinPrice).toFixed(2).replace(".", ",")}</td>
-                          <td>
-                            {averagePrices[item.SearchString] !== null && averagePrices[item.SearchString] !== undefined
-                              ? `R$ ${Number(averagePrices[item.SearchString]).toFixed(2).replace(".", ",")}`
-                              : "N/A"}
-                          </td>
+                          <td>R$ {Number(averagePrices[item.SearchString]).toFixed(2).replace(".", ",")}</td>
                         </tr>
                       ))
                     ) : (

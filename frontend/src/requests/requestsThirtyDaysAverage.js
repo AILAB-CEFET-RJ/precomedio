@@ -1,26 +1,21 @@
-const basicUrl = "http://127.0.0.1:8000/";
-
-export const GetThirtyDaysAverage = async (searchString) => {
-  try {
-    const response = await fetch(
-      `${basicUrl}history/?searchString=${encodeURIComponent(searchString)}`,
-      {
+export const GetAllMeanPricesLast30Days = async () => {
+    try {
+      const response = await fetch("http://127.0.0.1:8000/mean-prices/last-30-days/", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
           Authorization: "Token " + localStorage.getItem("authToken"),
         },
+      });
+  
+      if (!response.ok) {
+        throw new Error("Erro ao buscar preços médios");
       }
-    );
-
-    if (!response.ok) {
-      throw new Error("Erro ao buscar preço médio dos últimos 30 dias");
+  
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Erro ao buscar preços médios:", error);
+      return [];
     }
-
-    const data = await response.json();
-    return data?.average_price_30_days ?? null;
-  } catch (error) {
-    console.error("Erro ao buscar preço médio:", error);
-    return null;
-  }
-};
+  };
