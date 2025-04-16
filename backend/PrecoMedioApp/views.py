@@ -14,7 +14,7 @@ from rest_framework.authentication import SessionAuthentication, TokenAuthentica
 from rest_framework.decorators import authentication_classes, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from datetime import datetime, timedelta
-from django.db.models import Min
+from django.db.models import Min, Avg
 from .serializers import PriceTrackerSerializer, UserSerializer, FavoriteSerializer
 
 from .models import Products, PriceTracker, Busca_consolidado, Favorites
@@ -22,8 +22,8 @@ from django.http import HttpResponse
 
 @api_view(['GET'])
 def list_min_price_per_product(request):
-    queryset = PriceTracker.objects.values('SearchString') \
-                                   .annotate(MinPrice=Min('Price')) \
+    queryset = Busca_consolidado.objects.values('SearchString') \
+                                   .annotate(MinPrice=Min('MinPrice')) \
                                    .order_by('SearchString')
 
     result = list(queryset)
@@ -193,24 +193,27 @@ def get_favorites(request):
         )
 
 @api_view(['GET'])
-def get_prices_monthly_history(request):
+def get_mean_prices_last_30_days(request):
     try:
-        search_query = request.GET.get('searchString')
-        search_query = search_query.replace('"', '').replace("'", '')
+        thirty_days_ago = datetime.now().date() - timedelta(days=30)
 
-        thirty_days_ago = datetime.now() - timedelta(days=30)
-
-        priceTrackers = PriceTracker.objects.filter(
-            SearchString__icontains=search_query,
+        queryset = Busca_consolidado.objects.filter(
             DateOfSearch__gte=thirty_days_ago
+        ).values(
+            'SearchString'
+        ).annotate(
+            MeanPriceLast30Days=Avg('AvgPrice') 
+        ).order_by(
+            'SearchString'  
         )
 
-        if not priceTrackers.exists():
-            return Response({"average_price_30_days": None}, status=200)
+        result = list(queryset)
 
-        avg_price = sum(p.Price for p in priceTrackers) / len(priceTrackers)
-        return Response({"average_price_30_days": round(avg_price, 2)}, status=200)
+        return Response(result, status=status.HTTP_200_OK)
 
     except Exception as e:
-        print("Error:", str(e))
-        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        print("Erro:", str(e))
+        return Response(
+            {'error': str(e)}, 
+            status=status.HTTP_400_BAD_REQUEST
+        )
