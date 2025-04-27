@@ -207,17 +207,22 @@ def get_mean_prices_last_6_months(request):
                 DateOfSearch__gte=six_months_ago_start,
                 DateOfSearch__lt=current_month_start
             )
-            .annotate(month=TruncMonth('DateOfSearch'))
-            .values('month')
-            .annotate(mean_price=Avg('AvgPrice'))
-            .order_by('month')
+            .annotate(month=TruncMonth('DateOfSearch')) 
+            .values('SearchString', 'month')
+            .annotate(mean_price=Avg('AvgPrice')) 
+            .order_by('SearchString', 'month')
         )
 
-        result = {
-            entry['month'].strftime('%B %Y'): round(entry['mean_price'], 2) 
-            for entry in queryset
-            if entry['mean_price'] is not None
-        }
+        result = {}
+        for entry in queryset:
+            product = entry['SearchString']
+            month = entry['month'].strftime('%B %Y')
+            price = round(entry['mean_price'], 2)
+            
+            if product not in result:
+                result[product] = {}
+            result[product][month] = price
+
 
         return Response(result, status=status.HTTP_200_OK)
     
