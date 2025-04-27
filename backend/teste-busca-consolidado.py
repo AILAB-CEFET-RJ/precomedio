@@ -11,8 +11,9 @@ from PrecoMedioApp.models import Busca_consolidado
 def inserir_dados_ficticios_busca_consolidado():
     search_string = "iphone13 128gb"
     hoje = datetime.now()
+    Busca_consolidado.objects.all().delete()
     
-    for i in range(30):
+    for i in range(500):
         dia = hoje - timedelta(days=i)
         avg_price = round(random.uniform(2500, 3500), 2)
         min_price = round(random.uniform(2000, avg_price - 1), 2) 

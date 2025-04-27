@@ -14,7 +14,9 @@ from rest_framework.authentication import SessionAuthentication, TokenAuthentica
 from rest_framework.decorators import authentication_classes, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta 
 from django.db.models import Min, Avg
+from django.db.models.functions import TruncMonth
 from .serializers import PriceTrackerSerializer, UserSerializer, FavoriteSerializer
 
 from .models import Products, PriceTracker, Busca_consolidado, Favorites
@@ -193,24 +195,32 @@ def get_favorites(request):
         )
 
 @api_view(['GET'])
-def get_mean_prices_last_30_days(request):
+def get_mean_prices_last_6_months(request):
     try:
-        thirty_days_ago = datetime.now().date() - timedelta(days=30)
+        # Get the first day of the current month at midnight
+        current_month_start = datetime.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        six_months_ago_start = current_month_start - relativedelta(months=6)
 
-        queryset = Busca_consolidado.objects.filter(
-            DateOfSearch__gte=thirty_days_ago
-        ).values(
-            'SearchString'
-        ).annotate(
-            MeanPriceLast30Days=Avg('AvgPrice') 
-        ).order_by(
-            'SearchString'  
+        queryset = (
+            Busca_consolidado.objects
+            .filter(
+                DateOfSearch__gte=six_months_ago_start,
+                DateOfSearch__lt=current_month_start
+            )
+            .annotate(month=TruncMonth('DateOfSearch'))
+            .values('month')
+            .annotate(mean_price=Avg('AvgPrice'))
+            .order_by('month')
         )
 
-        result = list(queryset)
+        result = {
+            entry['month'].strftime('%B %Y'): round(entry['mean_price'], 2) 
+            for entry in queryset
+            if entry['mean_price'] is not None
+        }
 
         return Response(result, status=status.HTTP_200_OK)
-
+    
     except Exception as e:
         print("Erro:", str(e))
         return Response(
