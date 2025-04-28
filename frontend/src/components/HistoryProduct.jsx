@@ -113,7 +113,7 @@ const HistoryProduct = () => {
                   <XAxis dataKey="month" />
                   <YAxis domain={['auto', 'auto']} />
                   <Tooltip />
-                  <Line type="stepBefore" dataKey="price" stroke="#008000" activeDot={{ r: 8 }} />
+                  <Line type="monotone" dataKey="price" stroke="#008000" activeDot={{ r: 8 }} />
                 </LineChart>
               </ResponsiveContainer>
             </article>
