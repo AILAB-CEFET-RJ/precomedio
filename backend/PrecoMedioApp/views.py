@@ -193,6 +193,32 @@ def get_favorites(request):
             {'error': str(e)}, 
             status=status.HTTP_400_BAD_REQUEST
         )
+        
+@api_view(['GET'])
+def get_mean_prices_last_30_days(request):
+    try:
+        thirty_days_ago = datetime.now().date() - timedelta(days=30)
+
+        queryset = Busca_consolidado.objects.filter(
+            DateOfSearch__gte=thirty_days_ago
+        ).values(
+            'SearchString'
+        ).annotate(
+            MeanPriceLast30Days=Avg('AvgPrice') 
+        ).order_by(
+            'SearchString'  
+        )
+
+        result = list(queryset)
+
+        return Response(result, status=status.HTTP_200_OK)
+
+    except Exception as e:
+        print("Erro:", str(e))
+        return Response(
+            {'error': str(e)}, 
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
 @api_view(['GET'])
 def get_mean_prices_last_6_months(request):
