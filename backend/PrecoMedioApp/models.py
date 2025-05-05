@@ -38,3 +38,12 @@ class Favorites(models.Model):
     class Meta:
         unique_together = ('user', 'price_tracker')
         db_table = "Favorites"
+
+class Preco_Mensal(models.Model):
+    Consolidadoid = models.IntegerField(primary_key=True)
+    SearchString = models.CharField(max_length=100)
+    Price = models.DecimalField(max_digits=10, decimal_places=2) 
+    Year = models.DecimalField(max_digits=10, decimal_places=2)
+    Month = models.IntegerField(choices=[(i, i) for i in range(1, 13)])
+    class Meta:
+        db_table = "Preco_Mensal"
