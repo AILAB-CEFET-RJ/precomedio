@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { GetLowerPriceHistory } from "../requests/requestsLowerPriceHistory";
-import { GetAllMeanPricesLast30Days } from "../requests/requestsThirtyDaysAverage"
+import { GetAllMeanPricesLast30Days } from "../requests/requestsThirtyDaysAverage";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import axios from 'axios';
 import Header from "./Header";
@@ -10,7 +10,8 @@ const HistoryProduct = () => {
   const [lowerPriceHistory, setLowerPriceHistory] = useState([]);
   const [averagePrices, setAveragePrices] = useState({});
   const [load, setLoad] = useState(false);
-  const [data, setData] = useState([]);
+  const [groupedData, setGroupedData] = useState({});
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
   useEffect(() => {
     loadPriceHistory();
@@ -28,9 +29,17 @@ const HistoryProduct = () => {
           return monthlyData;
         });
 
-        const flattenedData = formattedData.flat();
+        const grouped = formattedData.reduce((acc, productData) => {
+          if (productData.length > 0) {
+            const productName = productData[0].product;
+            acc[productName] = productData;
+          }
+          return acc;
+        }, {});
 
-        setData(flattenedData);
+        setGroupedData(grouped);
+        const firstProduct = Object.keys(grouped)[0];
+        if (firstProduct) setSelectedProduct(firstProduct);
       })
       .catch(error => {
         console.error('Erro ao buscar dados:', error);
@@ -62,6 +71,8 @@ const HistoryProduct = () => {
     setLoad(false);
   };
 
+  const chartData = selectedProduct && groupedData[selectedProduct] ? groupedData[selectedProduct] : [];
+
   return (
     <>
       <div id="container-fluid container2">
@@ -91,7 +102,7 @@ const HistoryProduct = () => {
                         <tr key={i}>
                           <td>{item.SearchString}</td>
                           <td>R$ {Number(item.MinPrice).toFixed(2).replace(".", ",")}</td>
-                          <td>R$ {Number(averagePrices[item.SearchString]).toFixed(2).replace(".", ",")}</td>
+                          <td>R$ {Number(averagePrices[item.SearchString] || 0).toFixed(2).replace(".", ",")}</td>
                         </tr>
                       ))
                     ) : (
@@ -105,17 +116,35 @@ const HistoryProduct = () => {
                     )}
                   </tbody>
                 </table>
+
+                {Object.keys(groupedData).length > 0 && (
+                  <div className="mb-4 text-center">
+                    <label htmlFor="product-select" className="me-2 fw-bold">Selecionar Produto:</label>
+                    <select
+                      className="bg-white"
+                      id="product-select"
+                      onChange={(e) => setSelectedProduct(e.target.value)}
+                      value={selectedProduct || ""}
+                    >
+                      {Object.keys(groupedData).map((productName) => (
+                        <option className="bg-white" key={productName} value={productName}>{productName}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                <ResponsiveContainer width="100%" height={400}>
+                  <LineChart data={chartData}
+                    margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="month" />
+                    <YAxis domain={['auto', 'auto']} />
+                    <Tooltip />
+                    <Legend />
+                    <Line type="monotone" dataKey="price" stroke="#008000" activeDot={{ r: 8 }} />
+                  </LineChart>
+                </ResponsiveContainer>
               </div>
-              <ResponsiveContainer width="100%" height={400}>
-                <LineChart data={data}
-                  margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="month" />
-                  <YAxis domain={['auto', 'auto']} />
-                  <Tooltip />
-                  <Line type="monotone" dataKey="price" stroke="#008000" activeDot={{ r: 8 }} />
-                </LineChart>
-              </ResponsiveContainer>
             </article>
           </section>
         )}
