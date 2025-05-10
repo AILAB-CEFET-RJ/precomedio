@@ -47,3 +47,11 @@ class Preco_Mensal(models.Model):
     Month = models.IntegerField(choices=[(i, i) for i in range(1, 13)])
     class Meta:
         db_table = "Preco_Mensal"
+
+class Alert(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    SearchString = models.CharField(max_length=100)
+    target_price = models.DecimalField(max_digits=10, decimal_places=2)
+
+    class Meta:
+        db_table = "Alert"
