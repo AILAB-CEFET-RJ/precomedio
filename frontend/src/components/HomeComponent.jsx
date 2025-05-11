@@ -43,7 +43,7 @@ const HomeComponent = () => {
     }
     setLoad(false);
   }
-  
+
 
   const onSubmit = async (data1) => {
     setLoad(true);
@@ -101,15 +101,15 @@ const HomeComponent = () => {
                     </tr>
                   </thead>
                   <tbody>
-                      <tr>
+                    <tr>
                         <td className="text-center">{statistical_mean ? statistical_mean:<span style={{ backgroundColor:"#f2f2f2", color:"red"}}>-</span>}</td>
-                        {/*
+                      {/*
                     <td>-</td>
                     <td>-</td>
                     <td>-</td> */}
                         <td className="text-center">{statistical_lower ? statistical_lower:<span style={{backgroundColor:"#f2f2f2",color:"red"}}>-</span>}</td>
-                        {/*<td>-</td>*/}
-                      </tr>
+                      {/*<td>-</td>*/}
+                    </tr>
                   </tbody>
                 </table>
               </div>
@@ -133,7 +133,7 @@ const HomeComponent = () => {
                         <td>{prod.Model}</td>
                         <td>R$ {prod.Price.replace(".", ",")}</td>
                         <td>{prod.Supplier}</td>
-                        <td> {prod.SearchString.split(" ")[1]}</td>
+                        <td> {prod.SearchString.split("+")[1]}</td>
                         <td>{prod.DateOfSearch.split(/((\d){2,4}-(\d){2,2}-(\d){2,2})/)[1]}</td>
                       </tr>
                     )) : (
@@ -147,9 +147,9 @@ const HomeComponent = () => {
                 </table>
                 {productChosen && <div className="my-5">
                   <div className="d-flex align-items-center justify-content-end">
-                    <button 
+                    <button
                       style={{ backgroundColor: "#fcfd87", color: "#2f3f2e" }}
-                      onClick={handleFavorite}  
+                      onClick={handleFavorite}
                       className="btn btn-sm"
                       disabled={!productChosen || productChosen.length === 0}>
                       Adicionar ao favorito
