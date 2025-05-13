@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, re_path
-from PrecoMedioApp.views import search, login, signup, save_favorites, get_favorites, buscaDiaria_alimentarConsolidada, list_min_price_per_product, get_mean_prices_last_30_days, get_mean_prices_last_6_months, list_alerts, create_alert, update_alert, delete_alert
+from PrecoMedioApp.views import search, login, signup, save_favorites, get_favorites, buscaDiaria_alimentarConsolidada, list_min_price_per_product, get_mean_prices_last_30_days, get_mean_prices_last_6_months, precos_mensais_view, list_alerts, create_alert, update_alert, delete_alert
 
 urlpatterns = [
     path('buscaDiaria_alimentarConsolidada/', buscaDiaria_alimentarConsolidada, name='buscaDiaria_alimentarConsolidada'),
@@ -33,4 +33,6 @@ urlpatterns = [
     path('alerts/create/', create_alert, name='create_alert'),
     path('alerts/update/<int:alert_id>/', update_alert, name='update_alert'),
     path('alerts/delete/<int:alert_id>/', delete_alert, name='delete_alert'),
+    path('precos-mensais/', precos_mensais_view, name='precos-mensais'),
+
 ]

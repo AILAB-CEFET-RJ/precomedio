@@ -19,7 +19,7 @@ from django.db.models import Min, Avg
 from django.db.models.functions import TruncMonth
 from .serializers import PriceTrackerSerializer, UserSerializer, FavoriteSerializer, AlertSerializer
 
-from .models import Products, PriceTracker, Busca_consolidado, Favorites, Alert
+from .models import Products, PriceTracker, Busca_consolidado, Favorites, Alert, Preco_Mensal
 from django.http import HttpResponse
 
 @api_view(['GET'])
@@ -257,7 +257,28 @@ def get_mean_prices_last_6_months(request):
             {'error': str(e)}, 
             status=status.HTTP_400_BAD_REQUEST
         )
-    
+
+
+def precos_mensais_view(request):
+    dados = Preco_Mensal.objects.all().order_by('SearchString', 'Year', 'Month')
+
+    resultado = {}
+
+    for item in dados:
+        nome_produto = item.SearchString
+        mes_formatado = f"{int(item.Month):02d}/{int(item.Year)}"
+        preco = float(item.Price)
+
+        if nome_produto not in resultado:
+            resultado[nome_produto] = []
+
+        resultado[nome_produto].append({
+            'month': mes_formatado,
+            'product': nome_produto,
+            'price': preco
+        })
+    return JsonResponse(resultado)
+
 @api_view(['GET'])
 def list_alerts(request):
     try:

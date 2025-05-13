@@ -15,18 +15,17 @@ const HistoryProduct = () => {
 
   useEffect(() => {
     loadPriceHistory();
-    axios.get('http://127.0.0.1:8000/mean-prices/last-6-months/')
+    axios.get('http://127.0.0.1:8000/precos-mensais/')
       .then(response => {
         const products = response.data;
 
         const formattedData = Object.keys(products).map(productName => {
           const prices = products[productName];
-          const monthlyData = Object.keys(prices).map(month => ({
-            month,
+          return prices.map(priceData => ({
+            month: priceData.month,
             product: productName,
-            price: prices[month]
+            price: priceData.price
           }));
-          return monthlyData;
         });
 
         const grouped = formattedData.reduce((acc, productData) => {
@@ -38,6 +37,7 @@ const HistoryProduct = () => {
         }, {});
 
         setGroupedData(grouped);
+
         const firstProduct = Object.keys(grouped)[0];
         if (firstProduct) setSelectedProduct(firstProduct);
       })
