@@ -17,9 +17,9 @@ from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta 
 from django.db.models import Min, Avg
 from django.db.models.functions import TruncMonth
-from .serializers import PriceTrackerSerializer, UserSerializer, FavoriteSerializer
+from .serializers import PriceTrackerSerializer, UserSerializer, FavoriteSerializer, AlertSerializer
 
-from .models import Products, PriceTracker, Busca_consolidado, Favorites
+from .models import Products, PriceTracker, Busca_consolidado, Favorites, Alert
 from django.http import HttpResponse
 
 @api_view(['GET'])
@@ -257,3 +257,53 @@ def get_mean_prices_last_6_months(request):
             {'error': str(e)}, 
             status=status.HTTP_400_BAD_REQUEST
         )
+    
+@api_view(['GET'])
+def list_alerts(request):
+    try:
+        user_id = request.GET.get('userId')
+        user = User.objects.get(id=user_id)
+        alerts = Alert.objects.filter(user=user)
+        serializer = AlertSerializer(alerts, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+def create_alert(request):
+    try:
+        user_id = request.data.get('userId')
+        user = User.objects.get(id=user_id)
+        data = request.data
+        data['user'] = user.id  # Adiciona o ID do usuário ao payload
+        serializer = AlertSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['PUT'])
+def update_alert(request, alert_id):
+    try:
+        alert = get_object_or_404(Alert, id=alert_id)
+        serializer = AlertSerializer(alert, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['DELETE'])
+def delete_alert(request, alert_id):
+    try:
+        alert = get_object_or_404(Alert, id=alert_id)
+        alert.delete()
+        return Response({'message': 'Alert deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)

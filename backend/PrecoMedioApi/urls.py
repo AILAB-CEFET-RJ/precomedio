@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, re_path
-from PrecoMedioApp.views import search, login, signup, save_favorites, get_favorites, buscaDiaria_alimentarConsolidada, list_min_price_per_product, get_mean_prices_last_30_days, get_mean_prices_last_6_months
+from PrecoMedioApp.views import search, login, signup, save_favorites, get_favorites, buscaDiaria_alimentarConsolidada, list_min_price_per_product, get_mean_prices_last_30_days, get_mean_prices_last_6_months, list_alerts, create_alert, update_alert, delete_alert
 
 urlpatterns = [
     path('buscaDiaria_alimentarConsolidada/', buscaDiaria_alimentarConsolidada, name='buscaDiaria_alimentarConsolidada'),
@@ -29,4 +29,8 @@ urlpatterns = [
     path('min_prices/', list_min_price_per_product, name='list_min_price_per_product'),
     path('mean-prices/last-30-days/', get_mean_prices_last_30_days, name='mean_prices_last_30_days'),
     path('mean-prices/last-6-months/', get_mean_prices_last_6_months, name='mean_prices_last_6_months'),
+    path('alerts/', list_alerts, name='list_alerts'),
+    path('alerts/create/', create_alert, name='create_alert'),
+    path('alerts/update/<int:alert_id>/', update_alert, name='update_alert'),
+    path('alerts/delete/<int:alert_id>/', delete_alert, name='delete_alert'),
 ]
