@@ -144,7 +144,8 @@ def save_favorites(request):
                     favorite, created = Favorites.objects.get_or_create(
                         user=user,
                         price_tracker=price_tracker,
-                        defaults={'date_added': datetime.now()}
+                        defaults={'date_added': datetime.now()},
+                        SearchString=price_tracker_data['SearchString']
                     )
                     if created:
                         saved_products.append(favorite)

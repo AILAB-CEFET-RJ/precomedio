@@ -34,6 +34,7 @@ class Favorites(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     price_tracker = models.ForeignKey(PriceTracker, on_delete=models.CASCADE)
     date_added = models.DateTimeField()
+    SearchString = models.CharField(max_length=100, default="")
 
     class Meta:
         unique_together = ('user', 'price_tracker')
