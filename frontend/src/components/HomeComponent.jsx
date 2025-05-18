@@ -6,6 +6,9 @@ import { Pagination } from "./Pagination";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import SchemaHome from "../schemas/SchemaHome";
+import { FaHeart } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+
 const HomeComponent = () => {
   const [productChosen, setProductChosen] = useState([]);
   const [statistical_mean, setStatistical_mean] = useState(null);
@@ -13,6 +16,7 @@ const HomeComponent = () => {
   const [numpages, setNumPages] = useState([]);
   const [load, setLoad] = useState(false);
   const [prodSlice, setProdSlice] = useState([])
+  const navigate = useNavigate();
   let num = 0;
   let listNum = [];
   const { register, handleSubmit, reset, formState: { errors } } = useForm({
@@ -44,6 +48,20 @@ const HomeComponent = () => {
     setLoad(false);
   }
 
+  const handleSingleFavorite = async (produto) => {
+    setLoad(true);
+    try {
+      const userId = localStorage.getItem("userId");
+      await SaveFavorites([produto], userId);
+      alert("Produto adicionado aos favoritos!");
+    } catch (e) {
+      alert("Erro ao salvar o item nos favoritos");
+      console.error("Erro:", e);
+    }
+    setLoad(false);
+  };
+
+
 
   const onSubmit = async (data1) => {
     setLoad(true);
@@ -60,7 +78,6 @@ const HomeComponent = () => {
       setProductChosen(products);
     } catch (e) {
       alert("Erro no servidor");
-      console.log("Erro no servidor");
     }
     setLoad(false);
 
@@ -124,17 +141,33 @@ const HomeComponent = () => {
                       <th id="item-header-table" className="align-middle" scope="col">Fornecedor</th>
                       <th id="item-header-table" className="align-middle" scope="col">Armazenamento</th>
                       <th id="item-header-table" className="align-middle" scope="col">Data</th>
+                      <th id="item-header-table" className="align-middle" scope="col">Favoritar</th>
                     </tr>
                   </thead>
                   <tbody>
                     {productChosen.length > 0 && productChosen ? productChosen.map((prod, i) => (
-                      <tr key={i}>
-                        <th hidden="hidden" className="align-middle idProduto">{prod.ProductId}</th>
+                      <tr 
+                        key={i}
+                        style={{ cursor: "pointer" }}
+                        onClick={() => navigate("/produto", { state: prod })}
+                      >
                         <td>{prod.Model}</td>
                         <td>R$ {prod.Price.replace(".", ",")}</td>
                         <td>{prod.Supplier}</td>
-                        <td> {prod.SearchString.split("+")[1]}</td>
+                        <td>{prod.SearchString.split("+")[1]}</td>
                         <td>{prod.DateOfSearch.split(/((\d){2,4}-(\d){2,2}-(\d){2,2})/)[1]}</td>
+                        <td className="text-center">
+                          <button
+                            className="btn btn-sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleSingleFavorite(prod);
+                            }}
+                            title="Salvar nos favoritos"
+                          >
+                            <FaHeart className="bg-transparent" size={20} />
+                          </button>
+                        </td>
                       </tr>
                     )) : (
                       <tr>
