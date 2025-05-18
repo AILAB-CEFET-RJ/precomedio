@@ -2,10 +2,12 @@ import { useState, useEffect } from "react";
 import { GetFavorites } from "../requests/requestsProducts";
 import Header from "./Header";
 import Footer from "./Footer";
+import { useNavigate } from "react-router-dom";
 
 const FavoritesComponent = () => {
   const [favorites, setFavorites] = useState([]);
   const [load, setLoad] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     loadFavorites();
@@ -55,7 +57,11 @@ const FavoritesComponent = () => {
                   <tbody>
                     {favorites.length > 0 ? (
                       favorites.map((fav, i) => (
-                        <tr key={i}>
+                        <tr 
+                          key={i}
+                          style={{ cursor: "pointer" }}
+                          onClick={() => navigate("/produto", { state: {...fav.price_tracker}})}
+                        >
                           <td>{fav.price_tracker.Model}</td>
                           <td>R$ {fav.price_tracker.Price.replace(".", ",")}</td>
                           <td>{fav.price_tracker.Supplier}</td>
