@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Products, PriceTracker, Busca_consolidado, Favorites, Preco_Mensal
+from .models import Products, PriceTracker, Busca_consolidado, FavoritesProduct, Preco_Mensal, FavoritesSearch	
 
 @admin.register(Products)
 class ProductsAdmin(admin.ModelAdmin):
@@ -13,10 +13,14 @@ class PriceTrackerAdmin(admin.ModelAdmin):
 class BuscaConsolidadoAdmin(admin.ModelAdmin):
     list_display = ('Consolidadoid', 'SearchString', 'AvgPrice', 'MinPrice', 'DateOfSearch')
 
-@admin.register(Favorites)
+@admin.register(FavoritesProduct)
 class FavoritesAdmin(admin.ModelAdmin):
     list_display = ('user', 'price_tracker', 'date_added')
 
 @admin.register(Preco_Mensal)
 class PrecoMensalAdmin(admin.ModelAdmin):
     list_display = ('Consolidadoid', 'SearchString', 'Price', 'Year', 'Month')
+    
+@admin.register(FavoritesSearch)
+class FavoritesSearchAdmin(admin.ModelAdmin):
+    list_display = ('user', 'search_string', 'date_added')

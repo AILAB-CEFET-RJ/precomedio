@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, re_path
-from PrecoMedioApp.views import search, login, signup, save_favorites, get_favorites, buscaDiaria_alimentarConsolidada, list_min_price_per_product, get_mean_prices_last_30_days, get_mean_prices_last_6_months, precos_mensais_view, list_alerts, create_alert, update_alert, delete_alert
+from PrecoMedioApp.views import search, login, signup, save_favorites, get_favorites, buscaDiaria_alimentarConsolidada, list_min_price_per_product, get_mean_prices_last_30_days, get_mean_prices_last_6_months, precos_mensais_view, list_alerts, create_alert, update_alert, delete_alert, save_favorites_search, get_favorites_search, delete_favorites_search
 
 urlpatterns = [
     path('buscaDiaria_alimentarConsolidada/', buscaDiaria_alimentarConsolidada, name='buscaDiaria_alimentarConsolidada'),
@@ -24,8 +24,11 @@ urlpatterns = [
     path('search/<str:model>/<str:storage>/', search, name='search'),
     re_path('login', login),
     re_path('signup', signup),
-    path('favorites/', save_favorites, name='save_favorites'),
-    path('favorites/list/', get_favorites, name='get_favorites'),
+    path('favorites-product/', save_favorites, name='save_favorites'),
+    path('favorites-product/list/', get_favorites, name='get_favorites'),
+    path('favorites-search/', save_favorites_search, name='save_favorites-search'),
+    path('favorites-search/list/', get_favorites_search, name='get_favorites_search'),
+    path('favorites-search/delete/<int:favorites_search_id>/', delete_favorites_search, name='delete_favorites_search'),
     path('min_prices/', list_min_price_per_product, name='list_min_price_per_product'),
     path('mean-prices/last-30-days/', get_mean_prices_last_30_days, name='mean_prices_last_30_days'),
     path('mean-prices/last-6-months/', get_mean_prices_last_6_months, name='mean_prices_last_6_months'),

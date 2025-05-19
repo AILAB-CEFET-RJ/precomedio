@@ -30,15 +30,23 @@ class Busca_consolidado(models.Model):
     class Meta:
         db_table = "Busca_consolidado"
 
-class Favorites(models.Model):
+class FavoritesProduct(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     price_tracker = models.ForeignKey(PriceTracker, on_delete=models.CASCADE)
     date_added = models.DateTimeField()
-    SearchString = models.CharField(max_length=100, default="")
-
+    
     class Meta:
         unique_together = ('user', 'price_tracker')
-        db_table = "Favorites"
+        db_table = "FavoritesProduct"
+        
+class FavoritesSearch(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    search_string = models.CharField(max_length=100)
+    date_added = models.DateTimeField()
+
+    class Meta:
+        unique_together = ('user', 'search_string')
+        db_table = "FavoritesSearch"        
 
 class Preco_Mensal(models.Model):
     Consolidadoid = models.IntegerField(primary_key=True)

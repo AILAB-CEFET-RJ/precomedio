@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import PriceTracker, Products, Favorites, Alert
+from .models import PriceTracker, Products, FavoritesProduct, Alert, FavoritesSearch
 
 class ProductsSerializer(serializers.ModelSerializer):
     class Meta:
@@ -17,14 +17,19 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields=['id','username','password','email']
 
-class FavoriteSerializer(serializers.ModelSerializer):
+class FavoriteProductSerializer(serializers.ModelSerializer):
     price_tracker = PriceTrackerSerializer()
     
     class Meta:
-        model = Favorites
+        model = FavoritesProduct
         fields = ['id', 'price_tracker', 'date_added']
 
 class AlertSerializer(serializers.ModelSerializer):
     class Meta:
         model = Alert
         fields = ['id', 'user', 'SearchString', 'target_price']
+
+class FavoritesSearchSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FavoritesSearch
+        fields = ['id', 'user', 'search_string', 'date_added']

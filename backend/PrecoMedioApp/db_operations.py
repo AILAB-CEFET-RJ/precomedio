@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 import re
-from .models import Products, PriceTracker, Busca_consolidado, Favorites
+from .models import Products, PriceTracker, Busca_consolidado, FavoritesProduct
 
 
 from .text_processing import get_brand
@@ -93,7 +93,7 @@ def getConsolidadoFromPriceTracker(searchString):
 def save_favorite(user, price_tracker_id):
     try:
         price_tracker = PriceTracker.objects.get(id=price_tracker_id)
-        favorite, created = Favorites.objects.get_or_create(
+        favorite, created = FavoritesProduct.objects.get_or_create(
             user=user,
             price_tracker=price_tracker,
             defaults={'date_added': datetime.now()}
@@ -104,7 +104,7 @@ def save_favorite(user, price_tracker_id):
         return None
 
 def get_user_favorites(user):
-    favorites = (Favorites.objects
+    favorites = (FavoritesProduct.objects
                 .filter(user=user)
                 .select_related('price_tracker')
                 .order_by('price_tracker__Model', 'price_tracker__Price', '-date_added'))

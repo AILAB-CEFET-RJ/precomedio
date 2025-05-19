@@ -17,9 +17,9 @@ from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta 
 from django.db.models import Min, Avg
 from django.db.models.functions import TruncMonth
-from .serializers import PriceTrackerSerializer, UserSerializer, FavoriteSerializer, AlertSerializer
+from .serializers import PriceTrackerSerializer, UserSerializer, FavoriteProductSerializer, AlertSerializer, FavoritesSearchSerializer
 
-from .models import Products, PriceTracker, Busca_consolidado, Favorites, Alert, Preco_Mensal
+from .models import Products, PriceTracker, Busca_consolidado, FavoritesProduct, Alert, Preco_Mensal, FavoritesSearch
 from django.http import HttpResponse
 
 @api_view(['GET'])
@@ -129,7 +129,6 @@ def save_favorites(request):
             price_trackers = PriceTracker.objects.filter(
                 Model__iexact=price_tracker_data['Model'],
                 Price=price_tracker_data['Price'],
-                SearchString=price_tracker_data['SearchString'],
                 Supplier=price_tracker_data['Supplier']
             )
 
@@ -141,16 +140,15 @@ def save_favorites(request):
                 
                 if key not in unique_trackers:
                     unique_trackers[key] = price_tracker
-                    favorite, created = Favorites.objects.get_or_create(
+                    favorite, created = FavoritesProduct.objects.get_or_create(
                         user=user,
                         price_tracker=price_tracker,
                         defaults={'date_added': datetime.now()},
-                        SearchString=price_tracker_data['SearchString']
                     )
                     if created:
                         saved_products.append(favorite)
 
-        serializer = FavoriteSerializer(saved_products, many=True)
+        serializer = FavoriteProductSerializer(saved_products, many=True)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     except Exception as e:
@@ -169,7 +167,7 @@ def get_favorites(request):
         user = User.objects.get(id=userId)
         
         # Buscar todos os favoritos
-        favorites = (Favorites.objects
+        favorites = (FavoritesProduct.objects
                     .filter(user=user)
                     .select_related('price_tracker')
                     .order_by('price_tracker__Model', 'price_tracker__Price', '-date_added'))
@@ -184,7 +182,7 @@ def get_favorites(request):
         # Converter o dicionário de volta para lista
         unique_favorites_list = list(unique_favorites.values())
         
-        serializer = FavoriteSerializer(unique_favorites_list, many=True)
+        serializer = FavoriteProductSerializer(unique_favorites_list, many=True)
         return Response(serializer.data)
         
     except Exception as e:
@@ -329,3 +327,59 @@ def delete_alert(request, alert_id):
         return Response({'message': 'Alert deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    
+@api_view(['POST'])
+def save_favorites_search(request):
+    print("Request data:", request.data)
+    
+    try:
+        search_string = request.data.get('searchString')
+        userId = request.data.get('userId')
+        user = User.objects.get(id=userId)
+        
+        
+        
+        if FavoritesSearch.objects.filter(user=user, search_string=search_string).exists():
+            return Response({"detail": "Favorite already exists."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        favorite_search = FavoritesSearch.objects.create(
+            user=user,
+            search_string=search_string,
+            date_added=datetime.now()
+        )
+        
+        serializer = FavoritesSearchSerializer(favorite_search)
+        return Response({"detail": "Search favorited sucessfuly"}, status=status.HTTP_201_CREATED)
+    
+    except Exception as e:
+        print("Erro:", str(e))
+        return Response(
+            {'error': str(e)}, 
+            status=status.HTTP_400_BAD_REQUEST
+        )
+        
+@api_view(['GET'])
+def get_favorites_search(request):
+    try:
+        userId = request.GET.get('userId')
+        user = User.objects.get(id=userId)
+        
+        favorites_search = FavoritesSearch.objects.filter(user=user).order_by('-date_added')
+        serializer = FavoritesSearchSerializer(favorites_search, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    except Exception as e:
+        print("Erro:", str(e))
+        return Response(
+            {'error': str(e)}, 
+            status=status.HTTP_400_BAD_REQUEST
+        )
+        
+@api_view(['DELETE'])
+def delete_favorites_search(request, search_id):
+    try:
+        favorite_search = get_object_or_404(FavoritesSearch, id=search_id)
+        favorite_search.delete()
+        return Response({'message': 'Favorite search deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)  
