@@ -26,7 +26,7 @@ urlpatterns = [
     re_path('signup', signup),
     path('favorites-product/', save_favorites, name='save_favorites'),
     path('favorites-product/list/', get_favorites, name='get_favorites'),
-    path('favorites-search/', save_favorites_search, name='save_favorites-search'),
+    path('favorites-search/', save_favorites_search, name='save_favorites_search'),
     path('favorites-search/list/', get_favorites_search, name='get_favorites_search'),
     path('favorites-search/delete/<int:favorites_search_id>/', delete_favorites_search, name='delete_favorites_search'),
     path('min_prices/', list_min_price_per_product, name='list_min_price_per_product'),
