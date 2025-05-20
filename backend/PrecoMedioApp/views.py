@@ -376,9 +376,10 @@ def get_favorites_search(request):
         )
         
 @api_view(['DELETE'])
-def delete_favorites_search(request, search_id):
+def delete_favorites_search(request, favorites_search_id):
+    print("Deleting search with ID:", favorites_search_id)	
     try:
-        favorite_search = get_object_or_404(FavoritesSearch, id=search_id)
+        favorite_search = get_object_or_404(FavoritesSearch, id=favorites_search_id)
         favorite_search.delete()
         return Response({'message': 'Favorite search deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
     except Exception as e:
