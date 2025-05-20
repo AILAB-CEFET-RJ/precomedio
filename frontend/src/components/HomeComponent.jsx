@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { GetProducts, SaveFavorites } from "../requests/requestsProducts";
+import { useState, useEffect } from "react";
+import { GetProducts, SaveFavoriteSearch, GetFavoriteSearches, DeleteFavoriteSearch } from "../requests/requestsProducts";
 import Header from "./Header";
 import Footer from "./Footer";
 import { Pagination } from "./Pagination";
@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import SchemaHome from "../schemas/SchemaHome";
 import { FaHeart } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 
 const HomeComponent = () => {
   const [productChosen, setProductChosen] = useState([]);
@@ -16,7 +16,11 @@ const HomeComponent = () => {
   const [numpages, setNumPages] = useState([]);
   const [load, setLoad] = useState(false);
   const [prodSlice, setProdSlice] = useState([])
-  const navigate = useNavigate();
+  const [lastSearch, setLastSearch] = useState("");
+  const [hasProducts, setHasProducts] = useState(false);
+  const [favoritesSearches, setFavoritesSearches] = useState([]);
+  const [isSearchFavorited, setIsSearchFavorited] = useState(false);
+  // const navigate = useNavigate();
   let num = 0;
   let listNum = [];
   const { register, handleSubmit, reset, formState: { errors } } = useForm({
@@ -36,32 +40,93 @@ const HomeComponent = () => {
     setLoad(false);
   }
 
-  const handleFavorite = async () => {
-    setLoad(true);
-    try {
-      const userId = localStorage.getItem("userId");
-      await SaveFavorites(productChosen, userId);
-    } catch (e) {
-      alert("Erro ao salvar nos favoritos");
-      console.error("Erro:", e);
-    }
-    setLoad(false);
-  }
+  // const handleFavorite = async () => {
+  //   setLoad(true);
+  //   try {
+  //     const userId = localStorage.getItem("userId");
+  //     await SaveFavorites(productChosen, userId);
+  //   } catch (e) {
+  //     alert("Erro ao salvar nos favoritos");
+  //     console.error("Erro:", e);
+  //   }
+  //   setLoad(false);
+  // }
 
-  const handleSingleFavorite = async (produto) => {
+  // const handleSingleFavorite = async (produto) => {
+  //   setLoad(true);
+  //   try {
+  //     const userId = localStorage.getItem("userId");
+  //     await SaveFavorites([produto], userId);
+  //     alert("Produto adicionado aos favoritos!");
+  //   } catch (e) {
+  //     alert("Erro ao salvar o item nos favoritos");
+  //     console.error("Erro:", e);
+  //   }
+  //   setLoad(false);
+  // };
+
+  const loadFavoritesSearches = async () => {
     setLoad(true);
     try {
-      const userId = localStorage.getItem("userId");
-      await SaveFavorites([produto], userId);
-      alert("Produto adicionado aos favoritos!");
+      const response = await GetFavoriteSearches();
+      setFavoritesSearches(response);
     } catch (e) {
-      alert("Erro ao salvar o item nos favoritos");
+      alert("Erro ao carregar buscas favoritas");
       console.error("Erro:", e);
     }
     setLoad(false);
   };
 
+  useEffect(() => {
+    loadFavoritesSearches();
+  }, [hasProducts]);
 
+  useEffect(() => {
+    const isAlreadyFavorited = favoritesSearches.some(
+      fav => fav.search_string.toLowerCase() === lastSearch.toLowerCase()
+    );
+    setIsSearchFavorited(isAlreadyFavorited);
+  }, [lastSearch, favoritesSearches]);
+
+
+  const handleSaveSearch = async () => {
+    try {
+      const userId = localStorage.getItem("userId");
+      if (!userId) {
+        alert("Usuário não autenticado.");
+        return;
+      }
+
+      if (!lastSearch) {
+        alert("Nenhuma busca realizada.");
+        return;
+      }
+
+      if (isSearchFavorited) {
+        const favorite = favoritesSearches.find(
+          fav => fav.search_string.toLowerCase() === lastSearch.toLowerCase()
+        );
+
+        if (favorite) {
+          try {
+            await DeleteFavoriteSearch(favorite.id);
+            alert("Busca favorita deletada com sucesso!");
+          } catch (error) {
+            alert("Erro ao deletar a busca favorita.");
+          }
+        }
+
+      } else {
+        await SaveFavoriteSearch(lastSearch, Number(userId));
+        alert("Busca salva com sucesso!");
+      }
+
+      await loadFavoritesSearches();
+    } catch (e) {
+      alert("Erro ao salvar ou deletar a busca.");
+      console.error("Erro:", e);
+    }
+  };
 
   const onSubmit = async (data1) => {
     setLoad(true);
@@ -70,18 +135,22 @@ const HomeComponent = () => {
       let res = await GetProducts(data1.search_product_home);
       let { products, mean, lowestPrice } = res;
 
+      if (products) setHasProducts(true)
+
       setProdSlice(products);
       [products, listNum] = Pagination(products, num, null);
       setNumPages([...listNum]);
       setStatistical_lower(lowestPrice);
       setStatistical_mean(mean);
       setProductChosen(products);
+      setLastSearch(data1.search_product_home);
     } catch (e) {
       alert("Erro no servidor");
     }
     setLoad(false);
 
   }
+
   return (
     <>
       <div id="container-fluid container2">
@@ -98,7 +167,16 @@ const HomeComponent = () => {
                 <div className="col-auto">
                   <div className="col-auto">
                     <button id="enviar-produto-pesquisa" className="btn" onClick={handleSubmit(onSubmit)}>Pesquisar iphone</button>
-                    <button id="limpar-produto" onClick={() => reset()} className="btn btn-danger mx-1">Limpar</button>
+                    <button id="limpar-produto" onClick={() => {reset(); setHasProducts(false)}} className="btn btn-danger mx-1">Limpar</button>
+                    {hasProducts && <button
+                      id="salvar-busca"
+                      type="button"
+                      className="btn"
+                      onClick={handleSaveSearch}
+                      title={isSearchFavorited ? "Remover dos favoritos" : "Salvar nos favoritos"}
+                    >
+                      <FaHeart size={20} color={isSearchFavorited ? "red" : "black"} />
+                    </button>}
                   </div>
                 </div>
               </form>
@@ -141,22 +219,22 @@ const HomeComponent = () => {
                       <th id="item-header-table" className="align-middle" scope="col">Fornecedor</th>
                       <th id="item-header-table" className="align-middle" scope="col">Armazenamento</th>
                       <th id="item-header-table" className="align-middle" scope="col">Data</th>
-                      <th id="item-header-table" className="align-middle" scope="col">Favoritar</th>
+                      {/* <th id="item-header-table" className="align-middle" scope="col">Favoritar</th> */}
                     </tr>
                   </thead>
                   <tbody>
                     {productChosen.length > 0 && productChosen ? productChosen.map((prod, i) => (
                       <tr 
                         key={i}
-                        style={{ cursor: "pointer" }}
-                        onClick={() => navigate("/produto", { state: prod })}
+                        // style={{ cursor: "pointer" }}
+                        // onClick={() => navigate("/produto", { state: prod })}
                       >
                         <td>{prod.Model}</td>
                         <td>R$ {prod.Price.replace(".", ",")}</td>
                         <td>{prod.Supplier}</td>
                         <td>{prod.SearchString.split("+")[1]}</td>
                         <td>{prod.DateOfSearch.split(/((\d){2,4}-(\d){2,2}-(\d){2,2})/)[1]}</td>
-                        <td className="text-center">
+                        {/* <td className="text-center">
                           <button
                             className="btn btn-sm"
                             onClick={(e) => {
@@ -167,7 +245,7 @@ const HomeComponent = () => {
                           >
                             <FaHeart className="bg-transparent" size={20} />
                           </button>
-                        </td>
+                        </td> */}
                       </tr>
                     )) : (
                       <tr>
@@ -178,7 +256,7 @@ const HomeComponent = () => {
                     )}
                   </tbody>
                 </table>
-                {productChosen && <div className="my-5">
+                {/* {productChosen && <div className="my-5">
                   <div className="d-flex align-items-center justify-content-end">
                     <button
                       style={{ backgroundColor: "#fcfd87", color: "#2f3f2e" }}
@@ -189,7 +267,7 @@ const HomeComponent = () => {
                     </button>
                   </div>
                 </div>
-                }
+                } */}
               </div>
             </article>
             {numpages.length > 1 &&
