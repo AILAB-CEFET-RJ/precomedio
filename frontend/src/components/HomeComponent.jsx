@@ -6,8 +6,60 @@ import { Pagination } from "./Pagination";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import SchemaHome from "../schemas/SchemaHome";
-import { FaHeart } from "react-icons/fa";
+import { FaHeart, FaBell } from "react-icons/fa";
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
+import { createAlert, getAlerts, deleteAlert } from "../requests/requestsAlerts";
 // import { useNavigate } from "react-router-dom";
+
+function AlertModal({ status, changeStatus, searchString, deleteMode, alertId, updateAlerts }) {
+  return (
+    <>
+      <Modal show={status} onHide={changeStatus} style={{ backgroundColor: 'transparent', backdropFilter: "blur(5px)", top: "20%" }}>
+        <Modal.Header closeButton>
+          <Modal.Title>{deleteMode ? "Deletar alerta para o produto" : "Criar alerta para o produto"}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>
+            {deleteMode ? "Você pode deletar o alerta para o produto pesquisado." : "Você pode criar um alerta para o produto pesquisado. Assim que o preço atingir o valor desejado, você receberá uma notificação."}
+          </p>
+          {!deleteMode && (
+            <form>
+              <label
+              >
+                Preço desejado:
+                <input type="number" />
+              </label>
+            </form>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant={deleteMode ? "danger" : "primary"} onClick={async () => {
+            try {
+              if (deleteMode) {
+                await deleteAlert(alertId);
+                updateAlerts(prevAlerts => prevAlerts.filter(alert => alert.id !== alertId));
+              } else {
+                const targetPrice = document.querySelector("input[type='number']").value;
+                if (!targetPrice || isNaN(targetPrice) || targetPrice <= 0) {
+                  alert("Por favor, insira um preço válido.");
+                  return;
+                }
+                const data = await createAlert(searchString, targetPrice);
+                updateAlerts(prevAlerts => [...prevAlerts, data]);
+              }
+              changeStatus();
+            } catch (err) {
+              console.log(err)
+            }
+          }}>
+            {deleteMode ? "Deletar" : "Criar"}
+          </Button>
+        </Modal.Footer>
+      </Modal >
+    </>
+  );
+}
 
 const HomeComponent = () => {
   const [productChosen, setProductChosen] = useState([]);
@@ -20,6 +72,9 @@ const HomeComponent = () => {
   const [hasProducts, setHasProducts] = useState(false);
   const [favoritesSearches, setFavoritesSearches] = useState([]);
   const [isSearchFavorited, setIsSearchFavorited] = useState(false);
+  const [showAlertModal, setShowAlertModal] = useState(false);
+  const [alertPrices, setAlertPrices] = useState([])
+  const [isAlertCreated, setIsAlertCreate] = useState(false)
   // const navigate = useNavigate();
   let num = 0;
   let listNum = [];
@@ -77,16 +132,36 @@ const HomeComponent = () => {
     setLoad(false);
   };
 
+  const loadPriceAlerts = async () => {
+    try {
+      const response = await getAlerts();
+      setAlertPrices(response)
+    } catch (err) {
+      alert("Erro ao carregar alerta de preços")
+      console.log(err)
+    }
+  }
+
   useEffect(() => {
     loadFavoritesSearches();
+    loadPriceAlerts()
   }, [hasProducts]);
 
   useEffect(() => {
     const isAlreadyFavorited = favoritesSearches.some(
       fav => fav.search_string.toLowerCase() === lastSearch.toLowerCase()
     );
+
     setIsSearchFavorited(isAlreadyFavorited);
   }, [lastSearch, favoritesSearches]);
+
+  useEffect(() => {
+    const isAlreadyAlerted = alertPrices.some(
+      alert => alert.SearchString.toLowerCase() === lastSearch.toLowerCase()
+    );
+
+    setIsAlertCreate(isAlreadyAlerted);
+  }, [lastSearch, alertPrices])
 
 
   const handleSaveSearch = async () => {
@@ -151,6 +226,10 @@ const HomeComponent = () => {
 
   }
 
+  const handleAlertModal = () => {
+    setShowAlertModal(!showAlertModal);
+  }
+
   return (
     <>
       <div id="container-fluid container2">
@@ -167,7 +246,7 @@ const HomeComponent = () => {
                 <div className="col-auto">
                   <div className="col-auto">
                     <button id="enviar-produto-pesquisa" className="btn" onClick={handleSubmit(onSubmit)}>Pesquisar iphone</button>
-                    <button id="limpar-produto" onClick={() => {reset(); setHasProducts(false)}} className="btn btn-danger mx-1">Limpar</button>
+                    <button id="limpar-produto" onClick={() => { reset(); setHasProducts(false) }} className="btn btn-danger mx-1">Limpar</button>
                     {hasProducts && <button
                       id="salvar-busca"
                       type="button"
@@ -177,6 +256,13 @@ const HomeComponent = () => {
                     >
                       <FaHeart size={20} color={isSearchFavorited ? "red" : "black"} />
                     </button>}
+                    {hasProducts &&
+                      <button
+                        onClick={handleAlertModal}
+                        type="button"
+                        className="btn">
+                        <FaBell size={20} color={isAlertCreated ? "yellow" : "black"} />
+                      </button>}
                   </div>
                 </div>
               </form>
@@ -197,12 +283,12 @@ const HomeComponent = () => {
                   </thead>
                   <tbody>
                     <tr>
-                        <td className="text-center">{statistical_mean ? statistical_mean:<span style={{ backgroundColor:"#f2f2f2", color:"red"}}>-</span>}</td>
+                      <td className="text-center">{statistical_mean ? statistical_mean : <span style={{ backgroundColor: "#f2f2f2", color: "red" }}>-</span>}</td>
                       {/*
                     <td>-</td>
                     <td>-</td>
                     <td>-</td> */}
-                        <td className="text-center">{statistical_lower ? statistical_lower:<span style={{backgroundColor:"#f2f2f2",color:"red"}}>-</span>}</td>
+                      <td className="text-center">{statistical_lower ? statistical_lower : <span style={{ backgroundColor: "#f2f2f2", color: "red" }}>-</span>}</td>
                       {/*<td>-</td>*/}
                     </tr>
                   </tbody>
@@ -224,10 +310,10 @@ const HomeComponent = () => {
                   </thead>
                   <tbody>
                     {productChosen.length > 0 && productChosen ? productChosen.map((prod, i) => (
-                      <tr 
+                      <tr
                         key={i}
-                        // style={{ cursor: "pointer" }}
-                        // onClick={() => navigate("/produto", { state: prod })}
+                      // style={{ cursor: "pointer" }}
+                      // onClick={() => navigate("/produto", { state: prod })}
                       >
                         <td>{prod.Model}</td>
                         <td>R$ {prod.Price.replace(".", ",")}</td>
@@ -277,13 +363,18 @@ const HomeComponent = () => {
                     <li className="page-item" key={nps}><button name={nps}
                       className="page-link" href="#"
                       onClick={() => { onPagination(nps, true) }}
-                    >{nps +1}</button></li>
+                    >{nps + 1}</button></li>
                   ))}
                 </ul>
               </nav>}
           </section>
         }{!load && <Footer />}
       </div>
+      <AlertModal status={showAlertModal} changeStatus={handleAlertModal} searchString={lastSearch} deleteMode={isAlertCreated} alertId={
+        alertPrices.find(alert => alert.SearchString.toLowerCase() === lastSearch.toLowerCase())?.id
+      } updateAlerts={setAlertPrices}
+
+      />
     </>
   );
 

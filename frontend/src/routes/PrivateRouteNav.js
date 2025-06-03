@@ -3,6 +3,7 @@ import HistoryProduct from "../components/HistoryProduct";
 import ProductPage from "../components/Product"
 import { Route, Routes, BrowserRouter, Navigate } from "react-router-dom";
 import FavoritesComponent from "../components/FavoritesComponent";
+import AlertsPage from "../components/Alerts";
 
 const PrivateRouteNav = () => {
     return (
@@ -13,6 +14,7 @@ const PrivateRouteNav = () => {
                 <Route path="*" element={<Navigate to={"/"} />} />
                 <Route path="/historico" element={<HistoryProduct />} />
                 <Route path="/produto" element={<ProductPage />} />
+                <Route path="/alertas" element={<AlertsPage />} />
             </Routes>
         </BrowserRouter>
     )
