@@ -85,7 +85,7 @@ const Alerts = () => {
                             )) : (
                             <tr>
                                 <td colSpan="6" style={{ color: "#7d0000" }} className="h6 text-center ">
-                                Nenhum dado carregado
+                                Nenhum alerta criado
                                 </td>
                             </tr>
                             )}

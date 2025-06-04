@@ -66,7 +66,7 @@ export const deleteAlert = async (alertId) => {
             throw new Error('UserId não encontrado');
         }
 
-        const response = await fetch(`${basicUrl}alerts/delete/${alertId}`, {
+        const response = await fetch(`${basicUrl}alerts/delete/${alertId}/`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
