@@ -83,3 +83,17 @@ export const deleteAlert = async (alertId) => {
         throw error;
     }
 }
+
+export async function updateAlert(alertId, target_price) {
+    const response = await fetch(`${basicUrl}/alerts/update/${alertId}/`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ target_price }),
+    });
+
+    if (!response.ok) throw new Error("Erro ao atualizar alerta");
+
+    return await response.json();
+}
