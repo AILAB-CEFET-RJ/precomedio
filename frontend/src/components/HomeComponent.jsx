@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import { GetProducts, SaveFavoriteSearch, GetFavoriteSearches, DeleteFavoriteSearch } from "../requests/requestsProducts";
 import Header from "./Header";
 import Footer from "./Footer";
@@ -9,7 +9,15 @@ import SchemaHome from "../schemas/SchemaHome";
 import { FaHeart, FaBell } from "react-icons/fa";
 import { getAlerts } from "../requests/requestsAlerts";
 import { AlertModal } from "./AlertModal"
+import { ToastContainer, toast } from 'react-toastify';
+
 // import { useNavigate } from "react-router-dom";
+
+const notify = (message) => toast(message, {
+  position: "top-right",
+  autoClose: 3000,
+  hideProgressBar: true,
+})
 
 const HomeComponent = () => {
   const [productChosen, setProductChosen] = useState([]);
@@ -180,6 +188,22 @@ const HomeComponent = () => {
     setShowAlertModal(!showAlertModal);
   }
 
+  useEffect(() => {
+    if (alertPrices.length > 0 && productChosen.length > 0) {
+      const productChosenAlerts = alertPrices.filter(alert => {
+        return productChosen.some(prod => prod.SearchString.replace("+", " ") === alert.SearchString.toLowerCase())
+      });
+
+      if (productChosenAlerts.length > 0) {
+        const productsWithIdealPrice = productChosen.map(prod => {
+          return productChosenAlerts.some(alert => Number(prod.Price) < Number(alert.target_price))
+        });
+
+        notify(`Alerta de Preço: Há ${productsWithIdealPrice.length} produtos com preço abaixo do esperado!`);
+      }
+    }
+  }, [productChosen]);
+
   return (
     <>
       <div id="container-fluid container2">
@@ -323,10 +347,11 @@ const HomeComponent = () => {
       <AlertModal status={showAlertModal} changeStatus={handleAlertModal} searchString={lastSearch} deleteMode={isAlertCreated} alertId={
         alertPrices.find(alert => alert.SearchString.toLowerCase() === lastSearch.toLowerCase())?.id
       } updateAlerts={setAlertPrices}
-
       />
+      <ToastContainer style={{ top: "160px", backgroundColor: "transparent" }} />
     </>
   );
 
 }
+
 export default HomeComponent;
