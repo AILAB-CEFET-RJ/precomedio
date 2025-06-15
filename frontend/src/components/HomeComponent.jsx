@@ -10,6 +10,8 @@ import { FaHeart, FaBell } from "react-icons/fa";
 import { getAlerts } from "../requests/requestsAlerts";
 import { AlertModal } from "./AlertModal"
 import { ToastContainer, toast } from 'react-toastify';
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
 
 // import { useNavigate } from "react-router-dom";
 
@@ -31,6 +33,8 @@ const HomeComponent = () => {
   const [favoritesSearches, setFavoritesSearches] = useState([]);
   const [isSearchFavorited, setIsSearchFavorited] = useState(false);
   const [showAlertModal, setShowAlertModal] = useState(false);
+  const [showOptionAlertModal, setShowOptionAlertModal] = useState(false);
+  const [alertModalType, setAlertModalType] = useState("create"); // "edit", "delete"
   const [alertPrices, setAlertPrices] = useState([])
   const [isAlertCreated, setIsAlertCreate] = useState(false)
   // const navigate = useNavigate();
@@ -184,6 +188,10 @@ const HomeComponent = () => {
 
   }
 
+  const handleOptionAlertModal = () => {
+    setShowOptionAlertModal(!showOptionAlertModal);
+  }
+
   const handleAlertModal = () => {
     setShowAlertModal(!showAlertModal);
   }
@@ -195,7 +203,7 @@ const HomeComponent = () => {
       });
 
       if (productChosenAlerts.length > 0) {
-        const productsWithIdealPrice = productChosen.map(prod => {
+        const productsWithIdealPrice = productChosen.filter(prod => {
           return productChosenAlerts.some(alert => Number(prod.Price) < Number(alert.target_price))
         });
 
@@ -232,7 +240,14 @@ const HomeComponent = () => {
                     </button>}
                     {hasProducts &&
                       <button
-                        onClick={handleAlertModal}
+                        onClick={() => {
+                          if (!isAlertCreated) {
+                            setAlertModalType("create");
+                            handleAlertModal();
+                          } else {
+                            handleOptionAlertModal();
+                          }
+                        }}
                         type="button"
                         className="btn">
                         <FaBell size={20} color={isAlertCreated ? "yellow" : "black"} />
@@ -344,7 +359,29 @@ const HomeComponent = () => {
           </section>
         }{!load && <Footer />}
       </div>
-      <AlertModal status={showAlertModal} changeStatus={handleAlertModal} searchString={lastSearch} deleteMode={isAlertCreated} alertId={
+      <Modal show={showOptionAlertModal} onHide={handleOptionAlertModal} style={{ backgroundColor: 'transparent', backdropFilter: "blur(5px)", top: "20%" }}>
+        <Modal.Header>
+          <Modal.Title>Deletar ou editar o alerta</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>Você deseja deletar ou editar o alerta?</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <div style={{ display: "flex", justifyContent: "space-between", width: "100%", backgroundColor: "transparent" }}>
+            <Button variant="danger" onClick={() => {
+              setAlertModalType("delete");
+              setShowOptionAlertModal(false);
+              setShowAlertModal(true);
+            }}>Deletar</Button>
+            <Button variant="primary" onClick={() => {
+              setAlertModalType("edit");
+              setShowOptionAlertModal(false);
+              setShowAlertModal(true);
+            }}>Editar</Button>
+          </div>
+        </Modal.Footer>
+      </Modal>
+      <AlertModal status={showAlertModal} changeStatus={handleAlertModal} searchString={lastSearch} deleteMode={alertModalType === "delete"} editMode={alertModalType === "edit"} alertId={
         alertPrices.find(alert => alert.SearchString.toLowerCase() === lastSearch.toLowerCase())?.id
       } updateAlerts={setAlertPrices}
       />
