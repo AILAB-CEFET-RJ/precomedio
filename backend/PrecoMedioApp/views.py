@@ -18,7 +18,8 @@ from dateutil.relativedelta import relativedelta
 from django.db.models import Min, Avg
 from django.db.models.functions import TruncMonth
 from .serializers import PriceTrackerSerializer, UserSerializer, FavoriteProductSerializer, AlertSerializer, FavoritesSearchSerializer
-
+from django.core.mail import send_mail
+from django.conf import settings
 from .models import Products, PriceTracker, Busca_consolidado, FavoritesProduct, Alert, Preco_Mensal, FavoritesSearch
 from django.http import HttpResponse
 
@@ -40,22 +41,38 @@ def list_min_price_per_product(request):
 
 @api_view(['GET'])
 def buscaDiaria_alimentarConsolidada(request):
+    search_queries = [
+        "iphone12 128gb", "iphone12 256gb",
+        "iphone13 128gb", "iphone13 256gb",
+        "iphone14 128gb", "iphone14 256gb"
+    ]
+    for search_query in search_queries:
+        soup = fazer_pesquisa(search_query)
+        soup_ads, soup_results = extrair_resultados(soup)
+        products_with_filters = obter_modelos_e_precos(soup_results, soup_ads, search_query)
+        products = get_price_trackers_by_title_and_storage(products_with_filters)
+        filtered_products = detectar_outliers(products)
+        serialized_priceTrackers = PriceTrackerSerializer(filtered_products, many=True).data  
 
-    if request.method == 'GET':
-        search_queries = ["iphone12 128gb", "iphone12 256gb", "iphone13 128gb", "iphone13 256gb", "iphone14 128gb", "iphone14 256gb"]
-        for search_query in search_queries:
-            soup = fazer_pesquisa(search_query)
-            soup_ads, soup_results = extrair_resultados(soup)
-            products_with_filters = obter_modelos_e_precos(soup_results, soup_ads, search_query)
-            products = get_price_trackers_by_title_and_storage(products_with_filters)
-            filtered_products = detectar_outliers(products)
-            serialized_priceTrackers = PriceTrackerSerializer(filtered_products, many=True).data  
+        avg, lowestPrice = getConsolidadoFromPriceTracker(search_query)
+        create_buscaConsolidada(search_query, avg, lowestPrice)
 
-            avg, lowestPrice = getConsolidadoFromPriceTracker(search_query)
-            create_buscaConsolidada(search_query, avg, lowestPrice)
-        
+        # Enviar alerta por e-mail se necessário
+        if lowestPrice is not None:
+            # Busca todos os alertas para essa searchstring cujo target_price >= lowestPrice
+            alerts = Alert.objects.filter(SearchString=search_query, target_price__gte=lowestPrice)
+            for alert in alerts:
+                user = alert.user
+                if user.email:
+                    send_mail(
+                        subject="Alerta de preço atingido!",
+                        message=f"O produto '{search_query}' atingiu o preço desejado: R$ {lowestPrice} (sua meta: R$ {alert.target_price})",
+                        from_email=settings.DEFAULT_FROM_EMAIL,
+                        recipient_list=[user.email],
+                        fail_silently=True,
+                    )
 
-        return HttpResponse("Funcao executada com sucesso!")
+    return HttpResponse("Funcao executada com sucesso!")
 
 
 @csrf_exempt
