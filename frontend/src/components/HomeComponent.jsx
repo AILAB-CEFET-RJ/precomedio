@@ -1,4 +1,4 @@
-import { useState, useEffect, use } from "react";
+import { useState, useEffect } from "react";
 import { GetProducts, SaveFavoriteSearch, GetFavoriteSearches, DeleteFavoriteSearch } from "../requests/requestsProducts";
 import Header from "./Header";
 import Footer from "./Footer";
@@ -12,8 +12,6 @@ import { AlertModal } from "./AlertModal"
 import { ToastContainer, toast } from 'react-toastify';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
-
-// import { useNavigate } from "react-router-dom";
 
 const notify = (message) => toast(message, {
   position: "top-right",
@@ -34,15 +32,45 @@ const HomeComponent = () => {
   const [isSearchFavorited, setIsSearchFavorited] = useState(false);
   const [showAlertModal, setShowAlertModal] = useState(false);
   const [showOptionAlertModal, setShowOptionAlertModal] = useState(false);
-  const [alertModalType, setAlertModalType] = useState("create"); // "edit", "delete"
+  const [alertModalType, setAlertModalType] = useState("create");
   const [alertPrices, setAlertPrices] = useState([])
   const [isAlertCreated, setIsAlertCreate] = useState(false)
-  // const navigate = useNavigate();
   let num = 0;
   let listNum = [];
   const { register, handleSubmit, reset, formState: { errors } } = useForm({
     resolver: yupResolver(SchemaHome)
   });
+
+  const saveIdealPriceProductsToLocalStorage = (products) => {
+    try {
+      const existingProducts = JSON.parse(localStorage.getItem('idealPriceProducts') || '[]');
+      
+      const newProducts = products.filter(newProd => 
+        !existingProducts.some(existingProd => 
+          existingProd.Model === newProd.Model && 
+          existingProd.Supplier === newProd.Supplier &&
+          existingProd.Price === newProd.Price
+        )
+      );
+      
+      const productsWithTimestamp = newProducts.map(prod => ({
+        ...prod,
+        savedAt: new Date().toISOString()
+      }));
+      
+      const updatedProducts = [...existingProducts, ...productsWithTimestamp];
+      
+      localStorage.setItem('idealPriceProducts', JSON.stringify(updatedProducts));
+      
+      console.log(`${newProducts.length} produtos com preço ideal salvos no localStorage`);
+      
+      return newProducts.length;
+    } catch (error) {
+      console.error('Erro ao salvar produtos no localStorage:', error);
+      return 0;
+    }
+  };
+
   const onPagination = (e, check = false) => {
     let n = null;
     if (!check) {
@@ -56,31 +84,6 @@ const HomeComponent = () => {
     setProductChosen(prods);
     setLoad(false);
   }
-
-  // const handleFavorite = async () => {
-  //   setLoad(true);
-  //   try {
-  //     const userId = localStorage.getItem("userId");
-  //     await SaveFavorites(productChosen, userId);
-  //   } catch (e) {
-  //     alert("Erro ao salvar nos favoritos");
-  //     console.error("Erro:", e);
-  //   }
-  //   setLoad(false);
-  // }
-
-  // const handleSingleFavorite = async (produto) => {
-  //   setLoad(true);
-  //   try {
-  //     const userId = localStorage.getItem("userId");
-  //     await SaveFavorites([produto], userId);
-  //     alert("Produto adicionado aos favoritos!");
-  //   } catch (e) {
-  //     alert("Erro ao salvar o item nos favoritos");
-  //     console.error("Erro:", e);
-  //   }
-  //   setLoad(false);
-  // };
 
   const loadFavoritesSearches = async () => {
     setLoad(true);
@@ -106,7 +109,7 @@ const HomeComponent = () => {
 
   useEffect(() => {
     loadFavoritesSearches();
-    loadPriceAlerts()
+    loadPriceAlerts();
   }, [hasProducts]);
 
   useEffect(() => {
@@ -124,7 +127,6 @@ const HomeComponent = () => {
 
     setIsAlertCreate(isAlreadyAlerted);
   }, [lastSearch, alertPrices])
-
 
   const handleSaveSearch = async () => {
     try {
@@ -185,7 +187,6 @@ const HomeComponent = () => {
       alert("Erro no servidor");
     }
     setLoad(false);
-
   }
 
   const handleOptionAlertModal = () => {
@@ -207,10 +208,14 @@ const HomeComponent = () => {
           return productChosenAlerts.some(alert => Number(prod.Price) < Number(alert.target_price))
         });
 
-        notify(`Alerta de Preço: Há ${productsWithIdealPrice.length} produtos com preço abaixo do esperado!`);
+        if (productsWithIdealPrice.length > 0) {
+          saveIdealPriceProductsToLocalStorage(productsWithIdealPrice);
+          notify(`Alerta de Preço: Há ${productsWithIdealPrice.length} produtos com preço abaixo do esperado!`);
+          
+        }
       }
     }
-  }, [productChosen]);
+  }, [productChosen, alertPrices]);
 
   return (
     <>
@@ -263,22 +268,13 @@ const HomeComponent = () => {
                   <thead className="thead-dark">
                     <tr >
                       <th id="item-statistic-table" scope="col" className="text-center">Média</th>
-                      {/*<th scope="col" className="text-success">Mediana</th>
-                  <th scope="col" className="text-success">Desvio Padrão</th>
-                  <th scope="col" className="text-success">Variância</th>*/}
                       <th id="item-statistic-table" scope="col" className="text-center">Menor valor</th>
-                      {/*<th scope="col" className="text-success">Maior valor</th>*/}
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
                       <td className="text-center">{statistical_mean ? statistical_mean : <span style={{ backgroundColor: "#f2f2f2", color: "red" }}>-</span>}</td>
-                      {/*
-                    <td>-</td>
-                    <td>-</td>
-                    <td>-</td> */}
                       <td className="text-center">{statistical_lower ? statistical_lower : <span style={{ backgroundColor: "#f2f2f2", color: "red" }}>-</span>}</td>
-                      {/*<td>-</td>*/}
                     </tr>
                   </tbody>
                 </table>
@@ -294,33 +290,16 @@ const HomeComponent = () => {
                       <th id="item-header-table" className="align-middle" scope="col">Fornecedor</th>
                       <th id="item-header-table" className="align-middle" scope="col">Armazenamento</th>
                       <th id="item-header-table" className="align-middle" scope="col">Data</th>
-                      {/* <th id="item-header-table" className="align-middle" scope="col">Favoritar</th> */}
                     </tr>
                   </thead>
                   <tbody>
                     {productChosen.length > 0 && productChosen ? productChosen.map((prod, i) => (
-                      <tr
-                        key={i}
-                      // style={{ cursor: "pointer" }}
-                      // onClick={() => navigate("/produto", { state: prod })}
-                      >
+                      <tr key={i}>
                         <td>{prod.Model}</td>
                         <td>R$ {prod.Price.replace(".", ",")}</td>
                         <td>{prod.Supplier}</td>
                         <td>{prod.SearchString.split("+")[1]}</td>
                         <td>{prod.DateOfSearch.split(/((\d){2,4}-(\d){2,2}-(\d){2,2})/)[1]}</td>
-                        {/* <td className="text-center">
-                          <button
-                            className="btn btn-sm"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleSingleFavorite(prod);
-                            }}
-                            title="Salvar nos favoritos"
-                          >
-                            <FaHeart className="bg-transparent" size={20} />
-                          </button>
-                        </td> */}
                       </tr>
                     )) : (
                       <tr>
@@ -331,18 +310,6 @@ const HomeComponent = () => {
                     )}
                   </tbody>
                 </table>
-                {/* {productChosen && <div className="my-5">
-                  <div className="d-flex align-items-center justify-content-end">
-                    <button
-                      style={{ backgroundColor: "#fcfd87", color: "#2f3f2e" }}
-                      onClick={handleFavorite}
-                      className="btn btn-sm"
-                      disabled={!productChosen || productChosen.length === 0}>
-                      Adicionar ao favorito
-                    </button>
-                  </div>
-                </div>
-                } */}
               </div>
             </article>
             {numpages.length > 1 &&
