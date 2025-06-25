@@ -35,6 +35,9 @@ const HomeComponent = () => {
   const [alertModalType, setAlertModalType] = useState("create");
   const [alertPrices, setAlertPrices] = useState([])
   const [isAlertCreated, setIsAlertCreate] = useState(false)
+  const [priceAlert, setPriceAlert] = useState(null);
+  const [idAlert, setIdAlert] = useState(null);
+
   let num = 0;
   let listNum = [];
   const { register, handleSubmit, reset, formState: { errors } } = useForm({
@@ -44,26 +47,26 @@ const HomeComponent = () => {
   const saveIdealPriceProductsToLocalStorage = (products) => {
     try {
       const existingProducts = JSON.parse(localStorage.getItem('idealPriceProducts') || '[]');
-      
-      const newProducts = products.filter(newProd => 
-        !existingProducts.some(existingProd => 
-          existingProd.Model === newProd.Model && 
+
+      const newProducts = products.filter(newProd =>
+        !existingProducts.some(existingProd =>
+          existingProd.Model === newProd.Model &&
           existingProd.Supplier === newProd.Supplier &&
           existingProd.Price === newProd.Price
         )
       );
-      
+
       const productsWithTimestamp = newProducts.map(prod => ({
         ...prod,
         savedAt: new Date().toISOString()
       }));
-      
+
       const updatedProducts = [...existingProducts, ...productsWithTimestamp];
-      
+
       localStorage.setItem('idealPriceProducts', JSON.stringify(updatedProducts));
-      
+
       console.log(`${newProducts.length} produtos com preço ideal salvos no localStorage`);
-      
+
       return newProducts.length;
     } catch (error) {
       console.error('Erro ao salvar produtos no localStorage:', error);
@@ -100,17 +103,26 @@ const HomeComponent = () => {
   const loadPriceAlerts = async () => {
     try {
       const response = await getAlerts();
-      setAlertPrices(response)
+      setAlertPrices(response);
+      const matchingAlert = response.find(alert =>
+        alert.SearchString.toLowerCase() === lastSearch.toLowerCase()
+      );
+      if (matchingAlert) {
+        setPriceAlert(matchingAlert.target_price);
+        setIdAlert(matchingAlert.id);
+      }
     } catch (err) {
-      alert("Erro ao carregar alerta de preços")
-      console.log(err)
+      console.error("Erro ao carregar alertas:", err);
+      alert("Erro ao carregar alerta de preços");
     }
-  }
+  };
 
   useEffect(() => {
     loadFavoritesSearches();
-    loadPriceAlerts();
-  }, [hasProducts]);
+    if (lastSearch) {
+      loadPriceAlerts();
+    }
+  }, [hasProducts, lastSearch]);
 
   useEffect(() => {
     const isAlreadyFavorited = favoritesSearches.some(
@@ -211,7 +223,7 @@ const HomeComponent = () => {
         if (productsWithIdealPrice.length > 0) {
           saveIdealPriceProductsToLocalStorage(productsWithIdealPrice);
           notify(`Alerta de Preço: Há ${productsWithIdealPrice.length} produtos com preço abaixo do esperado!`);
-          
+
         }
       }
     }
@@ -350,7 +362,7 @@ const HomeComponent = () => {
       </Modal>
       <AlertModal status={showAlertModal} changeStatus={handleAlertModal} searchString={lastSearch} deleteMode={alertModalType === "delete"} editMode={alertModalType === "edit"} alertId={
         alertPrices.find(alert => alert.SearchString.toLowerCase() === lastSearch.toLowerCase())?.id
-      } updateAlerts={setAlertPrices}
+      } updateAlerts={setAlertPrices} currentPrice={priceAlert}
       />
       <ToastContainer style={{ top: "160px", backgroundColor: "transparent" }} />
     </>
