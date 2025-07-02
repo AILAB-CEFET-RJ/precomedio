@@ -137,3 +137,6 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'precomedio59@gmail.com'
 EMAIL_HOST_PASSWORD = 'xsex meek ntmj ctfq'
 DEFAULT_FROM_EMAIL = 'precomedio59@gmail.com'
+
+#SERPAPI: Buscador de preços
+SERPAPI_KEY = '8b84f34b2988de3f9c68b7e1009d22be93bd941ddff355e79ac321d3a7398c18'

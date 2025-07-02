@@ -9,7 +9,7 @@ from django.shortcuts import get_object_or_404
 from django.db import connection
 from .text_processing import detectar_outliers
 from .db_operations import create_buscaConsolidada, get_average_price, get_price_trackers_by_title_and_storage, get_product_with_lowest_price, get_price_trackers_by_title, getConsolidadoFromPriceTracker
-from .utils import extrair_resultados, fazer_pesquisa, obter_modelos_e_precos
+from .utils import fazer_pesquisa, obter_modelos_e_precos
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from rest_framework.decorators import authentication_classes, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -47,9 +47,8 @@ def buscaDiaria_alimentarConsolidada(request):
         "iphone14 128gb", "iphone14 256gb"
     ]
     for search_query in search_queries:
-        soup = fazer_pesquisa(search_query)
-        soup_ads, soup_results = extrair_resultados(soup)
-        products_with_filters = obter_modelos_e_precos(soup_results, soup_ads, search_query)
+        results = fazer_pesquisa(search_query)
+        products_with_filters = obter_modelos_e_precos(results, search_query)
         products = get_price_trackers_by_title_and_storage(products_with_filters)
         filtered_products = detectar_outliers(products)
         serialized_priceTrackers = PriceTrackerSerializer(filtered_products, many=True).data  
@@ -82,14 +81,15 @@ def buscaDiaria_alimentarConsolidada(request):
 def search(request, model:str, storage: str):  
     if request.method == 'GET':
         search_query = f"{model}+{storage}"
-        soup = fazer_pesquisa(search_query)
-        products_with_filters = obter_modelos_e_precos(soup, search_query)
+        results = fazer_pesquisa(search_query)
+        products_with_filters = obter_modelos_e_precos(results, search_query)
         products = get_price_trackers_by_title_and_storage(products_with_filters)
         filtered_products = detectar_outliers(products)
         serialized_priceTrackers = PriceTrackerSerializer(filtered_products, many=True).data  
         # Pegar média e menor valor
         productlowestPrice = get_product_with_lowest_price(serialized_priceTrackers)
         mean = get_average_price(serialized_priceTrackers)
+        
         
         return JsonResponse({'lowestPrice': productlowestPrice['lowestPrice'], "mean": mean, "products": serialized_priceTrackers}, safe=False, status=200)
     else:
