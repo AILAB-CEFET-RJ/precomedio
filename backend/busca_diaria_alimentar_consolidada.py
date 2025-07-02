@@ -15,7 +15,7 @@ from django.conf import settings
 
 def busca_diaria_alimentar_consolidada():
     search_queries = [
-        "iphone13+128gb"
+        "iphone15+256gb"
     ]
     
     for search_query in search_queries:
@@ -27,11 +27,12 @@ def busca_diaria_alimentar_consolidada():
         # Pegar média e menor valor
         productlowestPrice = get_product_with_lowest_price(serialized_priceTrackers)
 
+        mean = get_average_price(serialized_priceTrackers) 
+        
         if mean is None or productlowestPrice is None:
             print(f"Dados insuficientes para {search_query}. Mean: {mean}, LowestPrice: {productlowestPrice}")
             continue
 
-        mean = get_average_price(serialized_priceTrackers) 
         searchstring_formatted = search_query.replace("+", " ")
         create_buscaConsolidada(searchstring_formatted, mean, productlowestPrice['lowestPrice'])
 
@@ -45,7 +46,7 @@ def busca_diaria_alimentar_consolidada():
                 if user.email:
                     send_mail(
                         subject="Alerta de preço atingido!",
-                        message=f"O produto '{search_query}' atingiu o preço desejado: R$ {productlowestPrice['lowestPrice']} (sua meta: R$ {alert.target_price})",
+                        message=f"O produto '{search_query.replace('+', ' ')}' atingiu o preço desejado: R$ {productlowestPrice['lowestPrice']} (sua meta: R$ {alert.target_price}). Confira o site para mais informações!",
                         from_email=settings.DEFAULT_FROM_EMAIL,
                         recipient_list=[user.email],
                         fail_silently=False,
