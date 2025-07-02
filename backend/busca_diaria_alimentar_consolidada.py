@@ -26,6 +26,11 @@ def busca_diaria_alimentar_consolidada():
         serialized_priceTrackers = PriceTrackerSerializer(filtered_products, many=True).data  
         # Pegar média e menor valor
         productlowestPrice = get_product_with_lowest_price(serialized_priceTrackers)
+
+        if mean is None or productlowestPrice is None:
+            print(f"Dados insuficientes para {search_query}. Mean: {mean}, LowestPrice: {productlowestPrice}")
+            continue
+
         mean = get_average_price(serialized_priceTrackers) 
         searchstring_formatted = search_query.replace("+", " ")
         create_buscaConsolidada(searchstring_formatted, mean, productlowestPrice['lowestPrice'])
