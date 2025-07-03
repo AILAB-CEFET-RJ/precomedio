@@ -10,6 +10,9 @@ from django.db import connection
 from .text_processing import detectar_outliers
 from .db_operations import create_buscaConsolidada, get_average_price, get_price_trackers_by_title_and_storage, get_product_with_lowest_price, get_price_trackers_by_title, getConsolidadoFromPriceTracker
 from .utils import fazer_pesquisa, obter_modelos_e_precos
+# Importação caso utilize o web scraping do Google Shopping
+# from .utils import extrair_resultados
+
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from rest_framework.decorators import authentication_classes, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -48,6 +51,11 @@ def buscaDiaria_alimentarConsolidada(request):
     ]
     for search_query in search_queries:
         results = fazer_pesquisa(search_query)
+        
+        # Caso utilize o web scraping do Google Shopping
+        # soup_ads, soup_results = extrair_resultados(results)
+        # products_with_filters = obter_modelos_e_precos(soup_ads, soup_results, search_query)
+
         products_with_filters = obter_modelos_e_precos(results, search_query)
         products = get_price_trackers_by_title_and_storage(products_with_filters)
         filtered_products = detectar_outliers(products)

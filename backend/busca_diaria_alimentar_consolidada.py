@@ -6,6 +6,8 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'PrecoMedioApi.settings')
 django.setup()
 
 from PrecoMedioApp.utils import fazer_pesquisa, obter_modelos_e_precos
+# Caso utilize o web scraping do Google Shopping
+# from PrecoMedioApp.utils import extrair_resultados
 from PrecoMedioApp.text_processing import detectar_outliers
 from PrecoMedioApp.db_operations import get_price_trackers_by_title_and_storage, getConsolidadoFromPriceTracker, create_buscaConsolidada, get_price_trackers_by_title_and_storage, get_product_with_lowest_price, get_average_price
 from PrecoMedioApp.serializers import PriceTrackerSerializer
